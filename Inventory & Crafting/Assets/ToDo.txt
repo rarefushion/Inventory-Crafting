@@ -1,0 +1,1 @@
+Fix: When you advanced split, get rid of items in hand then try to advanced split on any item that is less than the item you previously advanced split there's a object reference exeption in InventoryController 98. this is because for some reason the advancedSplitItem does not get set after this for the first click
