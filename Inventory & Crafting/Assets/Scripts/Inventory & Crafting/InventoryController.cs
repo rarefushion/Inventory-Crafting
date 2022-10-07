@@ -53,8 +53,18 @@ public class InventoryController : MonoBehaviour
     {
         //move image for item held by cursor
         cursorItem.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) + Vector3.forward;
-        //if (left else right click) raycast from mouse position for slot, check if hotkeys are held else signal Cursor.Click() or Cursor.RightClick().
-        if(Input.GetMouseButtonDown(0))
+        //if not clicking reset state
+        if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1))
+        {
+            if (Cursor.state == Cursor.CursorState.Transitioning || Cursor.state == Cursor.CursorState.LDrag || Cursor.state == Cursor.CursorState.RDrag)
+            {
+                if (Cursor.itemSlot.item != null) Cursor.state = Cursor.CursorState.Filled;
+                else Cursor.state = Cursor.CursorState.Neutral;
+                Cursor.draggingSlots.Clear();
+            }
+        }
+        //if (left else right click) raycast from mouse position for slot, check if hotkeys are held else signal Cursor.Click() or Cursor.RightClick(). 
+        else if(Input.GetMouseButton(0) && Cursor.state != Cursor.CursorState.Transitioning)
         {
             pointerEventData = new PointerEventData(eventSystem);
             pointerEventData.position = Input.mousePosition;
@@ -93,7 +103,7 @@ public class InventoryController : MonoBehaviour
                 }
             }
         }
-        else if(Input.GetMouseButtonDown(1))
+        else if(Input.GetMouseButton(1) && Cursor.state != Cursor.CursorState.Transitioning)
         {
             pointerEventData = new PointerEventData(eventSystem);
             pointerEventData.position = Input.mousePosition;
@@ -216,11 +226,14 @@ public static class Cursor
     //Both quanityText and image need to be set at start. 
     public static ItemSlot itemSlot = new ItemSlot();
     //Cursor state. Neutral no item, pickup item exists, LDrag and RDrag item exists and currently draging.
-    public enum CursorState {Neutral, Filled, LDrag, RDrag};
+    public enum CursorState {Neutral, Transitioning, Filled, LDrag, RDrag};
     public static CursorState state = CursorState.Neutral;
+    public static List<ItemSlot> draggingSlots = new List<ItemSlot>();
+    private static List<ItemQuanitySlots> leftDraggingItems = new List<ItemQuanitySlots>();
     //Triggered by InventoryController.Update() RayCast.
     public static void Click(ItemSlot hoverSlot)
     {
+        if (draggingSlots.Contains(hoverSlot)) return;
         switch (state)
         {
             case CursorState.Neutral:
@@ -228,36 +241,60 @@ public static class Cursor
                 {
                     itemSlot.Fill(hoverSlot.item, hoverSlot.quanity);
                     hoverSlot.Clear();
-                    state = CursorState.Filled;
+                    state = CursorState.Transitioning;
                 }
                 break;
             case CursorState.Filled:
                 if (hoverSlot.item == null)
                 {
+                    leftDraggingItems.Add(new ItemQuanitySlots(itemSlot.item, itemSlot.quanity, itemSlot));
+                    leftDraggingItems.Add(new ItemQuanitySlots(hoverSlot.item, hoverSlot.quanity, hoverSlot));
                     hoverSlot.Fill(itemSlot.item, itemSlot.quanity);
                     itemSlot.Clear();
-                    state = CursorState.Neutral;
+                    draggingSlots.Add(hoverSlot);
+                    if (itemSlot.item != null) state = CursorState.LDrag;
+                    else state = CursorState.Transitioning;
                 }
                 else if (itemSlot.item.name == hoverSlot.item.name)
                 {
                     if(hoverSlot.quanity == hoverSlot.item.maxStack)
                     {    
                         hoverSlot.Swap(itemSlot);
+                        state = CursorState.Transitioning;
                     } 
-                    //!!! TEST THIS
                     else 
                     {
+                        leftDraggingItems.Add(new ItemQuanitySlots(itemSlot.item, itemSlot.quanity, itemSlot));
+                        leftDraggingItems.Add(new ItemQuanitySlots(hoverSlot.item, hoverSlot.quanity, hoverSlot));
                         int quan = itemSlot.Split(Mathf.Clamp(itemSlot.quanity, 0, hoverSlot.item.maxStack - hoverSlot.quanity));
                         hoverSlot.Add(quan);
-                        if (itemSlot.item == null) state = CursorState.Neutral;
+                        draggingSlots.Add(hoverSlot);
+                        if (itemSlot.item != null) state = CursorState.LDrag;
+                        else state = CursorState.Transitioning;
                     }
                 }
                 else 
                 {    
                     hoverSlot.Swap(itemSlot);
+                    state = CursorState.Transitioning;
                 } 
                 break;
             case CursorState.LDrag:
+                if (hoverSlot.item == null)
+                {
+                    draggingSlots.Add(hoverSlot);
+                    foreach (ItemQuanitySlots IQS in leftDraggingItems)
+                    {
+                        if (IQS.locations(0) == itemSlot) continue;
+                        int quan = slot.Split(Mathf.Clamp(itemSlot.quanity, 0, hoverSlot.item.maxStack - hoverSlot.quanity));
+                        hoverSlot.Add(quan);
+                    }
+                }
+                else if(hoverSlot.item.name == leftDraggingItems.name)
+                {
+                    draggingSlots.Add(hoverSlot);
+
+                }
                 break;
             case CursorState.RDrag:
                 break;
@@ -269,6 +306,7 @@ public static class Cursor
     //Triggered by InventoryController.Update() RayCast.
     public static void RightClick(ItemSlot hoverSlot)
     {
+        if (draggingSlots.Contains(hoverSlot)) return;
         switch (state)
         {
             case CursorState.Neutral:
@@ -277,7 +315,7 @@ public static class Cursor
                     string itemName = hoverSlot.item.name;
                     int quan = hoverSlot.Split(Mathf.Clamp((hoverSlot.quanity + 1) / 2, 0, hoverSlot.item.maxStack));
                     itemSlot.Fill(InventoryController.current.itemByName[itemName].item, quan);
-                    state = CursorState.Filled;
+                    state = CursorState.Transitioning;
                 }
                 break;
             case CursorState.Filled:
@@ -286,18 +324,39 @@ public static class Cursor
                     string itemName = itemSlot.item.name;
                     int quan = itemSlot.Split(1);
                     hoverSlot.Fill(InventoryController.current.itemByName[itemName].item, quan);
-                    if (itemSlot.item == null) state = CursorState.Neutral;
+                    draggingSlots.Add(hoverSlot);
+                    if (itemSlot.item != null) state = CursorState.RDrag;
+                    else state = CursorState.Transitioning;
                 }
                 else if (itemSlot.item.name == hoverSlot.item.name) 
                 {
                     int quan = itemSlot.Split(Mathf.Clamp(1, 0, hoverSlot.item.maxStack - hoverSlot.quanity));
                     hoverSlot.Add(quan);
-                    if (itemSlot.item == null) state = CursorState.Neutral;
+                    draggingSlots.Add(hoverSlot);
+                    if (itemSlot.item != null) state = CursorState.RDrag;
+                    else state = CursorState.Transitioning;
                 }
                 break;
             case CursorState.LDrag:
                 break;
             case CursorState.RDrag:
+                if (hoverSlot.item == null)
+                {
+                    string itemName = itemSlot.item.name;
+                    int quan = itemSlot.Split(1);
+                    hoverSlot.Fill(InventoryController.current.itemByName[itemName].item, quan);
+                    draggingSlots.Add(hoverSlot);
+                    if (itemSlot.item != null) state = CursorState.RDrag;
+                    else state = CursorState.Transitioning;
+                }
+                else if (itemSlot.item.name == hoverSlot.item.name) 
+                {
+                    int quan = itemSlot.Split(Mathf.Clamp(1, 0, hoverSlot.item.maxStack - hoverSlot.quanity));
+                    hoverSlot.Add(quan);
+                    draggingSlots.Add(hoverSlot);
+                    if (itemSlot.item != null) state = CursorState.RDrag;
+                    else state = CursorState.Transitioning;
+                }
                 break;
             default:
                 Debug.Log("Error: Cursor.State exception. Current State: " + state);

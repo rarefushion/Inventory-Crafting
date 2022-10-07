@@ -59,13 +59,20 @@ public class ItemSlot: MonoBehaviour
 
     public void Swap(ItemSlot toSwap)
     {
-        //No need to log new item since we're using fill
         if (isInventory && !toSwap.isInventory) inventory.LogItem(this, -quanity, false);
         else if (!isInventory && toSwap.isInventory) inventory.LogItem(toSwap, -toSwap.quanity, false);
         string itemName = item.name;
         int quan = quanity;
-        Fill(toSwap.item, toSwap.quanity);
-        toSwap.Fill(inventory.itemByName[itemName].item, quan);
+        //Set this
+        quanity = toSwap.quanity;
+        quanityText.text = quanity.ToString();
+        item = toSwap.item;
+        image.sprite = item.image;
+        //Set toSwap
+        toSwap.quanity = quan;
+        toSwap.quanityText.text = toSwap.quanity.ToString();
+        toSwap.item = inventory.itemByName[itemName].item;
+        toSwap.image.sprite = toSwap.item.image;
     }
 
     public void Clear()
