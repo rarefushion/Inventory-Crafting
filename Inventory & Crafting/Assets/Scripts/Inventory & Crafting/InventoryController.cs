@@ -70,37 +70,41 @@ public class InventoryController : MonoBehaviour
             pointerEventData.position = Input.mousePosition;
             List<RaycastResult> raycastResults = new List<RaycastResult>();
             canvasRacaster.Raycast(pointerEventData, raycastResults);
+            ItemSlot slot = null;
             //if (slot under croshair)
             foreach(RaycastResult result in raycastResults)
             {
-                if (result.gameObject.name == "Slot(Clone)")
+                if (result.gameObject.name == "$Slot(Clone)") slot = result.gameObject.GetComponent<ItemSlot>();
+                else if (result.gameObject.name == "$Advanced Split") return;
+            }
+//Error: Key1 Need check for slot != null
+            //Check AdvancedSplit Key
+            if (Input.GetKey(KeyCode.LeftAlt))
+            {
+//Error: Key2 Set to 0 at start like when closing Key3
+                if (slot.item != null && Cursor.itemSlot.item == null)
                 {
-                    ItemSlot slot = result.gameObject.GetComponent<ItemSlot>();
-                    //Check AdvancedSplit Key
-                    if (Input.GetKey(KeyCode.LeftAlt))
-                    {
-                        if (slot.item != null && Cursor.itemSlot.item == null)
-                        {
-                            advancedSplitObject.GetChild(0).GetComponent<Slider>().maxValue = slot.quanity;
-                            advancedSplitItemSlot = slot;
-                            advancedSplitObject.gameObject.SetActive(true);
-                            advancedSplitObject.position = slot.transform.position + new Vector3(0, -slot.transform.gameObject.GetComponent<RectTransform>().localScale.y / 2, 1);
-                        }
-                    }
-                    //Check if trying to quick transfer/Shift Click
-                    else if (Input.GetKey(KeyCode.LeftShift) && activeStorage != null && slot.item != null) Cursor.QuickTransfer(slot);
-                    else 
-                    {
-                        //First check if advanced split is open
-                        if (advancedSplitItemSlot != null)
-                        {
-                            advancedSplitItemSlot = null;
-                            advancedSplitObject.gameObject.SetActive(false);
-                        }
-                        Cursor.Click(slot);
-                    }
-                    break;
+                    advancedSplitObject.GetChild(0).GetComponent<Slider>().maxValue = slot.quanity;
+                    advancedSplitItemSlot = slot;
+                    advancedSplitObject.gameObject.SetActive(true);
+                    advancedSplitObject.position = slot.transform.position + new Vector3(0, -slot.transform.gameObject.GetComponent<RectTransform>().localScale.y / 2, 1);
                 }
+            }
+            //Check quickTransfer Key
+            else if (Input.GetKey(KeyCode.LeftShift) && activeStorage != null && slot.item != null) Cursor.QuickTransfer(slot);
+            else 
+            {
+                //First check if advanced split is open
+                if (advancedSplitItemSlot != null)
+                {
+                    //Key 3
+                    advancedSplitObject.GetChild(0).GetComponent<Slider>().SetValueWithoutNotify(0);
+                    advancedSplitObject.GetChild(1).GetComponent<TMP_InputField>().text = "0";
+                    advancedSplitItemQuanity = (int)advancedSplitObject.GetChild(0).GetComponent<Slider>().value;
+                    advancedSplitItemSlot = null;
+                    advancedSplitObject.gameObject.SetActive(false);
+                }
+                Cursor.Click(slot);
             }
         }
         else if(Input.GetMouseButton(1) && Cursor.state != Cursor.CursorState.Transitioning)
@@ -109,37 +113,38 @@ public class InventoryController : MonoBehaviour
             pointerEventData.position = Input.mousePosition;
             List<RaycastResult> raycastResults = new List<RaycastResult>();
             canvasRacaster.Raycast(pointerEventData, raycastResults);
+            ItemSlot slot = null;
             //if (slot under croshair)
             foreach(RaycastResult result in raycastResults)
             {
-                if (result.gameObject.name == "Slot(Clone)")
+                if (result.gameObject.name == "$Slot(Clone)") slot = result.gameObject.GetComponent<ItemSlot>();
+                else if (result.gameObject.name == "$Advanced Split") return;
+            }
+            //Check AdvancedSplit Key
+            if (Input.GetKey(KeyCode.LeftAlt))
+            {
+                if (slot.item != null && Cursor.itemSlot.item == null)
                 {
-                    ItemSlot slot = result.gameObject.GetComponent<ItemSlot>();
-                    //Check AdvancedSplit Key
-                    if (Input.GetKey(KeyCode.LeftAlt))
-                    {
-                        if (slot.item != null && Cursor.itemSlot.item == null)
-                        {
-                            advancedSplitObject.GetChild(0).GetComponent<Slider>().maxValue = slot.quanity;
-                            advancedSplitItemSlot = slot;
-                            advancedSplitObject.gameObject.SetActive(true);
-                            advancedSplitObject.position = slot.transform.position + new Vector3(0, -slot.transform.gameObject.GetComponent<RectTransform>().localScale.y / 2, 1);
-                        }
-                    }
-                    //Check if trying to quick transfer/Shift Click
-                    else if (Input.GetKey(KeyCode.LeftShift) && activeStorage != null && slot.item != null) Cursor.QuickTransfer(slot);
-                    else 
-                    {
-                        //First check if advanced split is open
-                        if (advancedSplitItemSlot != null)
-                        {
-                            advancedSplitItemSlot = null;
-                            advancedSplitObject.gameObject.SetActive(false);
-                        }
-                        Cursor.RightClick(slot);
-                    }
-                    break;
+                    advancedSplitObject.GetChild(0).GetComponent<Slider>().maxValue = slot.quanity;
+                    advancedSplitItemSlot = slot;
+                    advancedSplitObject.gameObject.SetActive(true);
+                    advancedSplitObject.position = slot.transform.position + new Vector3(0, -slot.transform.gameObject.GetComponent<RectTransform>().localScale.y / 2, 1);
                 }
+            }
+            //Check quickTransfer Key
+            else if (Input.GetKey(KeyCode.LeftShift) && activeStorage != null && slot.item != null) Cursor.QuickTransfer(slot);
+            else 
+            {
+                //First check if advanced split is open
+                if (advancedSplitItemSlot != null)
+                {
+                    advancedSplitObject.GetChild(0).GetComponent<Slider>().SetValueWithoutNotify(0);
+                    advancedSplitObject.GetChild(1).GetComponent<TMP_InputField>().text = "0";
+                    advancedSplitItemQuanity = (int)advancedSplitObject.GetChild(0).GetComponent<Slider>().value;
+                    advancedSplitItemSlot = null;
+                    advancedSplitObject.gameObject.SetActive(false);
+                }
+                Cursor.RightClick(slot);
             }
         }
     }
@@ -229,7 +234,6 @@ public static class Cursor
     public enum CursorState {Neutral, Transitioning, Filled, LDrag, RDrag};
     public static CursorState state = CursorState.Neutral;
     public static List<ItemSlot> draggingSlots = new List<ItemSlot>();
-    private static List<ItemQuanitySlots> leftDraggingItems = new List<ItemQuanitySlots>();
     //Triggered by InventoryController.Update() RayCast.
     public static void Click(ItemSlot hoverSlot)
     {
@@ -247,8 +251,6 @@ public static class Cursor
             case CursorState.Filled:
                 if (hoverSlot.item == null)
                 {
-                    leftDraggingItems.Add(new ItemQuanitySlots(itemSlot.item, itemSlot.quanity, itemSlot));
-                    leftDraggingItems.Add(new ItemQuanitySlots(hoverSlot.item, hoverSlot.quanity, hoverSlot));
                     hoverSlot.Fill(itemSlot.item, itemSlot.quanity);
                     itemSlot.Clear();
                     draggingSlots.Add(hoverSlot);
@@ -264,8 +266,6 @@ public static class Cursor
                     } 
                     else 
                     {
-                        leftDraggingItems.Add(new ItemQuanitySlots(itemSlot.item, itemSlot.quanity, itemSlot));
-                        leftDraggingItems.Add(new ItemQuanitySlots(hoverSlot.item, hoverSlot.quanity, hoverSlot));
                         int quan = itemSlot.Split(Mathf.Clamp(itemSlot.quanity, 0, hoverSlot.item.maxStack - hoverSlot.quanity));
                         hoverSlot.Add(quan);
                         draggingSlots.Add(hoverSlot);
@@ -280,21 +280,6 @@ public static class Cursor
                 } 
                 break;
             case CursorState.LDrag:
-                if (hoverSlot.item == null)
-                {
-                    draggingSlots.Add(hoverSlot);
-                    foreach (ItemQuanitySlots IQS in leftDraggingItems)
-                    {
-                        if (IQS.locations(0) == itemSlot) continue;
-                        int quan = slot.Split(Mathf.Clamp(itemSlot.quanity, 0, hoverSlot.item.maxStack - hoverSlot.quanity));
-                        hoverSlot.Add(quan);
-                    }
-                }
-                else if(hoverSlot.item.name == leftDraggingItems.name)
-                {
-                    draggingSlots.Add(hoverSlot);
-
-                }
                 break;
             case CursorState.RDrag:
                 break;

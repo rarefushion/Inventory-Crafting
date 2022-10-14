@@ -992,7 +992,7 @@ GameObject:
   - component: {fileID: 8996948209032504431}
   - component: {fileID: 8996948209032504430}
   m_Layer: 5
-  m_Name: Advanced Split
+  m_Name: $Advanced Split
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

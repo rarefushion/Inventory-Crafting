@@ -3088,13 +3088,25 @@ PrefabInstance:
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 714854274}
+    - target: {fileID: 8996948208460664728, guid: e073ff1d8db455843b844f62dcb1d10d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8996948208508126338, guid: e073ff1d8db455843b844f62dcb1d10d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8996948208535310415, guid: e073ff1d8db455843b844f62dcb1d10d, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 714854274}
     - target: {fileID: 8996948209032504424, guid: e073ff1d8db455843b844f62dcb1d10d, type: 3}
       propertyPath: m_Name
-      value: Advanced Split
+      value: $Advanced Split
+      objectReference: {fileID: 0}
+    - target: {fileID: 8996948209032504424, guid: e073ff1d8db455843b844f62dcb1d10d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8996948209032504425, guid: e073ff1d8db455843b844f62dcb1d10d, type: 3}
       propertyPath: m_Pivot.x
