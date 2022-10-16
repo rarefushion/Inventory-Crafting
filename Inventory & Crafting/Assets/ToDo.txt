@@ -2,5 +2,6 @@ Remember: To just get it implimented and go threw later and organize
 
 Fix: Advanced split closing when sliding outside of AS box
 
-Fix: When swaping items that are the same but one is maxstack it logs extra. Need to log adding
+Fix: When swaping items that are the same but one is maxstack it logs extra. Need to log adding 
 
+Add: Highlight when leftDragging
