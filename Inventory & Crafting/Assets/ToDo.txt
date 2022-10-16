@@ -1,14 +1,6 @@
 Remember: To just get it implimented and go threw later and organize
 
-Fix: When advanced split > set to high number > advanced split something with lower quanity > null ref
-
 Fix: Advanced split closing when sliding outside of AS box
 
-Fix: When swaping items that are the same but one is maxstack it logs extra.
-
-Fix: InventoryController > Key1
-
-Fix: InventoryController > Key2
-
-impliment: Leftclick only fill at leftup
+Fix: When swaping items that are the same but one is maxstack it logs extra. Need to log adding
 

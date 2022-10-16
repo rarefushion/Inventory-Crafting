@@ -77,7 +77,7 @@ public class ItemSlot: MonoBehaviour
 
     public void Clear()
     {
-        inventory.LogItem(this, -quanity, false);
+        if (isInventory) inventory.LogItem(this, -quanity, false);
         quanity = 0;
         quanityText.text = quanity.ToString();
         item = null;

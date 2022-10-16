@@ -58,6 +58,8 @@ public class InventoryController : MonoBehaviour
         {
             if (Cursor.state == Cursor.CursorState.Transitioning || Cursor.state == Cursor.CursorState.LDrag || Cursor.state == Cursor.CursorState.RDrag)
             {
+                if (Cursor.state == Cursor.CursorState.LDrag) Cursor.LeftClickSplit();
+
                 if (Cursor.itemSlot.item != null) Cursor.state = Cursor.CursorState.Filled;
                 else Cursor.state = Cursor.CursorState.Neutral;
                 Cursor.draggingSlots.Clear();
@@ -77,11 +79,18 @@ public class InventoryController : MonoBehaviour
                 if (result.gameObject.name == "$Slot(Clone)") slot = result.gameObject.GetComponent<ItemSlot>();
                 else if (result.gameObject.name == "$Advanced Split") return;
             }
-//Error: Key1 Need check for slot != null
-            //Check AdvancedSplit Key
-            if (Input.GetKey(KeyCode.LeftAlt))
+            //Check if advanced split is open
+            if (advancedSplitItemSlot != null)
             {
-//Error: Key2 Set to 0 at start like when closing Key3
+                advancedSplitObject.GetChild(0).GetComponent<Slider>().SetValueWithoutNotify(0);
+                advancedSplitObject.GetChild(1).GetComponent<TMP_InputField>().text = "0";
+                advancedSplitItemQuanity = (int)advancedSplitObject.GetChild(0).GetComponent<Slider>().value;
+                advancedSplitItemSlot = null;
+                advancedSplitObject.gameObject.SetActive(false);
+            }
+            //Check AdvancedSplit Key
+            if (Input.GetKey(KeyCode.LeftAlt) && slot.item != null)
+            {
                 if (slot.item != null && Cursor.itemSlot.item == null)
                 {
                     advancedSplitObject.GetChild(0).GetComponent<Slider>().maxValue = slot.quanity;
@@ -92,20 +101,7 @@ public class InventoryController : MonoBehaviour
             }
             //Check quickTransfer Key
             else if (Input.GetKey(KeyCode.LeftShift) && activeStorage != null && slot.item != null) Cursor.QuickTransfer(slot);
-            else 
-            {
-                //First check if advanced split is open
-                if (advancedSplitItemSlot != null)
-                {
-                    //Key 3
-                    advancedSplitObject.GetChild(0).GetComponent<Slider>().SetValueWithoutNotify(0);
-                    advancedSplitObject.GetChild(1).GetComponent<TMP_InputField>().text = "0";
-                    advancedSplitItemQuanity = (int)advancedSplitObject.GetChild(0).GetComponent<Slider>().value;
-                    advancedSplitItemSlot = null;
-                    advancedSplitObject.gameObject.SetActive(false);
-                }
-                Cursor.Click(slot);
-            }
+            else if (slot != null) Cursor.Click(slot);
         }
         else if(Input.GetMouseButton(1) && Cursor.state != Cursor.CursorState.Transitioning)
         {
@@ -120,6 +116,15 @@ public class InventoryController : MonoBehaviour
                 if (result.gameObject.name == "$Slot(Clone)") slot = result.gameObject.GetComponent<ItemSlot>();
                 else if (result.gameObject.name == "$Advanced Split") return;
             }
+            //Check if advanced split is open
+            if (advancedSplitItemSlot != null)
+            {
+                advancedSplitObject.GetChild(0).GetComponent<Slider>().SetValueWithoutNotify(0);
+                advancedSplitObject.GetChild(1).GetComponent<TMP_InputField>().text = "0";
+                advancedSplitItemQuanity = (int)advancedSplitObject.GetChild(0).GetComponent<Slider>().value;
+                advancedSplitItemSlot = null;
+                advancedSplitObject.gameObject.SetActive(false);
+            }
             //Check AdvancedSplit Key
             if (Input.GetKey(KeyCode.LeftAlt))
             {
@@ -133,19 +138,7 @@ public class InventoryController : MonoBehaviour
             }
             //Check quickTransfer Key
             else if (Input.GetKey(KeyCode.LeftShift) && activeStorage != null && slot.item != null) Cursor.QuickTransfer(slot);
-            else 
-            {
-                //First check if advanced split is open
-                if (advancedSplitItemSlot != null)
-                {
-                    advancedSplitObject.GetChild(0).GetComponent<Slider>().SetValueWithoutNotify(0);
-                    advancedSplitObject.GetChild(1).GetComponent<TMP_InputField>().text = "0";
-                    advancedSplitItemQuanity = (int)advancedSplitObject.GetChild(0).GetComponent<Slider>().value;
-                    advancedSplitItemSlot = null;
-                    advancedSplitObject.gameObject.SetActive(false);
-                }
-                Cursor.RightClick(slot);
-            }
+            else if (slot != null) Cursor.RightClick(slot);
         }
     }
     //Slot item must not be null/Clear() Befor Log. Default Cursor functions do this already
@@ -173,6 +166,7 @@ public class InventoryController : MonoBehaviour
         string itemName = advancedSplitItemSlot.item.name;
         int quan = advancedSplitItemSlot.Split(advancedSplitItemQuanity);
         Cursor.itemSlot.Fill(itemByName[itemName].item, quan);
+        Cursor.state = Cursor.CursorState.Filled;
         advancedSplitItemSlot = null;
         advancedSplitObject.gameObject.SetActive(false);
     }
@@ -251,11 +245,8 @@ public static class Cursor
             case CursorState.Filled:
                 if (hoverSlot.item == null)
                 {
-                    hoverSlot.Fill(itemSlot.item, itemSlot.quanity);
-                    itemSlot.Clear();
                     draggingSlots.Add(hoverSlot);
-                    if (itemSlot.item != null) state = CursorState.LDrag;
-                    else state = CursorState.Transitioning;
+                    state = CursorState.LDrag;
                 }
                 else if (itemSlot.item.name == hoverSlot.item.name)
                 {
@@ -266,11 +257,8 @@ public static class Cursor
                     } 
                     else 
                     {
-                        int quan = itemSlot.Split(Mathf.Clamp(itemSlot.quanity, 0, hoverSlot.item.maxStack - hoverSlot.quanity));
-                        hoverSlot.Add(quan);
                         draggingSlots.Add(hoverSlot);
-                        if (itemSlot.item != null) state = CursorState.LDrag;
-                        else state = CursorState.Transitioning;
+                        state = CursorState.LDrag;
                     }
                 }
                 else 
@@ -280,6 +268,18 @@ public static class Cursor
                 } 
                 break;
             case CursorState.LDrag:
+                if (hoverSlot.item == null)
+                {
+                    if (draggingSlots.Count >= itemSlot.quanity) return;
+                    draggingSlots.Add(hoverSlot);
+                    state = CursorState.LDrag;
+                }
+                else if (itemSlot.item.name == hoverSlot.item.name)
+                {
+                    if (hoverSlot.quanity == hoverSlot.item.maxStack || draggingSlots.Count >= itemSlot.quanity) return;
+                    draggingSlots.Add(hoverSlot);
+                    state = CursorState.LDrag;
+                }
                 break;
             case CursorState.RDrag:
                 break;
@@ -383,6 +383,16 @@ public static class Cursor
                 if (invSlot.item == null && firstOpen == null) firstOpen = invSlot;
             }
             if (hoverSlot.item != null && firstOpen != null) firstOpen.Fill(hoverSlot.item, hoverSlot.Split(hoverSlot.quanity));
+        }
+    }
+
+    public static void LeftClickSplit()
+    {
+        int baseQuan = itemSlot.quanity;
+        foreach (ItemSlot dragged in draggingSlots)
+        {
+            if (dragged.item == null) dragged.Fill(itemSlot.item, itemSlot.Split(Mathf.Clamp(baseQuan / draggingSlots.Count, 1, itemSlot.item.maxStack)));
+            else dragged.Add(itemSlot.Split(Mathf.Clamp(baseQuan / draggingSlots.Count, 1, dragged.item.maxStack - dragged.quanity)));
         }
     }
 }
