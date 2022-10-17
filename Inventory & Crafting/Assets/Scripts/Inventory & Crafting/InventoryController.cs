@@ -56,7 +56,7 @@ public class InventoryController : MonoBehaviour
         //if not clicking reset state
         if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1))
         {
-            if (Cursor.state == Cursor.CursorState.Transitioning || Cursor.state == Cursor.CursorState.LDrag || Cursor.state == Cursor.CursorState.RDrag)
+            if (Cursor.state == Cursor.CursorState.Transitioning || Cursor.state == Cursor.CursorState.LDrag || Cursor.state == Cursor.CursorState.RDrag || Cursor.state == Cursor.CursorState.QucikTransfering)
             {
                 if (Cursor.state == Cursor.CursorState.LDrag) Cursor.LeftClickSplit();
 
@@ -77,17 +77,9 @@ public class InventoryController : MonoBehaviour
             foreach(RaycastResult result in raycastResults)
             {
                 if (result.gameObject.name == "$Slot(Clone)") slot = result.gameObject.GetComponent<ItemSlot>();
-                else if (result.gameObject.name == "$Advanced Split") return;
             }
-            //Check if advanced split is open
-            if (advancedSplitItemSlot != null)
-            {
-                advancedSplitObject.GetChild(0).GetComponent<Slider>().SetValueWithoutNotify(0);
-                advancedSplitObject.GetChild(1).GetComponent<TMP_InputField>().text = "0";
-                advancedSplitItemQuanity = (int)advancedSplitObject.GetChild(0).GetComponent<Slider>().value;
-                advancedSplitItemSlot = null;
-                advancedSplitObject.gameObject.SetActive(false);
-            }
+            //Check if advanced split is open. For left lick we don't do anything else if it's open otherwise it would close when moving slider.
+            if (advancedSplitItemSlot != null || slot == null) return;
             //Check AdvancedSplit Key
             if (Input.GetKey(KeyCode.LeftAlt) && slot.item != null)
             {
@@ -99,8 +91,6 @@ public class InventoryController : MonoBehaviour
                     advancedSplitObject.position = slot.transform.position + new Vector3(0, -slot.transform.gameObject.GetComponent<RectTransform>().localScale.y / 2, 1);
                 }
             }
-            //Check quickTransfer Key
-            else if (Input.GetKey(KeyCode.LeftShift) && activeStorage != null && slot.item != null) Cursor.QuickTransfer(slot);
             else if (slot != null) Cursor.Click(slot);
         }
         else if(Input.GetMouseButton(1) && Cursor.state != Cursor.CursorState.Transitioning)
@@ -116,7 +106,7 @@ public class InventoryController : MonoBehaviour
                 if (result.gameObject.name == "$Slot(Clone)") slot = result.gameObject.GetComponent<ItemSlot>();
                 else if (result.gameObject.name == "$Advanced Split") return;
             }
-            //Check if advanced split is open
+            //Check if advanced split is open. Right click is required to close advanced split
             if (advancedSplitItemSlot != null)
             {
                 advancedSplitObject.GetChild(0).GetComponent<Slider>().SetValueWithoutNotify(0);
@@ -125,6 +115,7 @@ public class InventoryController : MonoBehaviour
                 advancedSplitItemSlot = null;
                 advancedSplitObject.gameObject.SetActive(false);
             }
+            if (slot == null) return;
             //Check AdvancedSplit Key
             if (Input.GetKey(KeyCode.LeftAlt))
             {
@@ -136,8 +127,6 @@ public class InventoryController : MonoBehaviour
                     advancedSplitObject.position = slot.transform.position + new Vector3(0, -slot.transform.gameObject.GetComponent<RectTransform>().localScale.y / 2, 1);
                 }
             }
-            //Check quickTransfer Key
-            else if (Input.GetKey(KeyCode.LeftShift) && activeStorage != null && slot.item != null) Cursor.QuickTransfer(slot);
             else if (slot != null) Cursor.RightClick(slot);
         }
     }
@@ -225,12 +214,15 @@ public static class Cursor
     //Both quanityText and image need to be set at start. 
     public static ItemSlot itemSlot = new ItemSlot();
     //Cursor state. Neutral no item, pickup item exists, LDrag and RDrag item exists and currently draging.
-    public enum CursorState {Neutral, Transitioning, Filled, LDrag, RDrag};
+    public enum CursorState {Neutral, Transitioning, Filled, LDrag, RDrag, QucikTransfering};
     public static CursorState state = CursorState.Neutral;
     public static List<ItemSlot> draggingSlots = new List<ItemSlot>();
     //Triggered by InventoryController.Update() RayCast.
     public static void Click(ItemSlot hoverSlot)
     {
+        //Check modifiers
+        if ((state == CursorState.Neutral || state == CursorState.Filled) && Input.GetKey(KeyCode.LeftShift) && itemSlot.inventory.activeStorage != null) state = CursorState.QucikTransfering;
+        
         if (draggingSlots.Contains(hoverSlot)) return;
         switch (state)
         {
@@ -246,6 +238,7 @@ public static class Cursor
                 if (hoverSlot.item == null)
                 {
                     draggingSlots.Add(hoverSlot);
+                    hoverSlot.transform.GetComponent<Image>().color = new Color(0.588f, 0.588f, 0.588f, 1.000f);
                     state = CursorState.LDrag;
                 }
                 else if (itemSlot.item.name == hoverSlot.item.name)
@@ -258,6 +251,7 @@ public static class Cursor
                     else 
                     {
                         draggingSlots.Add(hoverSlot);
+                        hoverSlot.transform.GetComponent<Image>().color = new Color(0.588f, 0.588f, 0.588f, 1.000f);
                         state = CursorState.LDrag;
                     }
                 }
@@ -271,17 +265,58 @@ public static class Cursor
                 if (hoverSlot.item == null)
                 {
                     if (draggingSlots.Count >= itemSlot.quanity) return;
+                    hoverSlot.transform.GetComponent<Image>().color = new Color(0.588f, 0.588f, 0.588f, 1.000f);
                     draggingSlots.Add(hoverSlot);
                     state = CursorState.LDrag;
                 }
                 else if (itemSlot.item.name == hoverSlot.item.name)
                 {
                     if (hoverSlot.quanity == hoverSlot.item.maxStack || draggingSlots.Count >= itemSlot.quanity) return;
+                    Debug.Log(hoverSlot.transform.GetComponent<Image>().color);
+                    hoverSlot.transform.GetComponent<Image>().color = new Color(0.588f, 0.588f, 0.588f, 1.000f);
                     draggingSlots.Add(hoverSlot);
                     state = CursorState.LDrag;
                 }
                 break;
             case CursorState.RDrag:
+                break;
+            case CursorState.QucikTransfering:
+                if (hoverSlot.item != null)
+                {
+                    ItemSlot firstOpen = null;
+                    if (hoverSlot.isInventory)
+                    {
+                        foreach (Transform slotOBJ in InventoryController.current.activeStorage.content)
+                        {
+                            ItemSlot storageSlot = slotOBJ.GetComponent<ItemSlot>();
+                            if (storageSlot.item != null) 
+                            {
+                                if (storageSlot.item.name != hoverSlot.item.name) continue;
+                                storageSlot.Add(hoverSlot.Split(Mathf.Clamp(hoverSlot.quanity, 0, storageSlot.item.maxStack - storageSlot.quanity)));
+                                if (hoverSlot.item == null) break;
+                                continue;
+                            }
+                            if (storageSlot.item == null && firstOpen == null) firstOpen = storageSlot;
+                        }
+                        if (hoverSlot.item != null && firstOpen != null) firstOpen.Fill(hoverSlot.item, hoverSlot.Split(hoverSlot.quanity));
+                    }
+                    else
+                    {
+                        foreach (Transform slotOBJ in InventoryController.current.content)
+                        {
+                            ItemSlot invSlot = slotOBJ.GetComponent<ItemSlot>();
+                            if (invSlot.item != null) 
+                            {
+                                if (invSlot.item.name != hoverSlot.item.name) continue;
+                                invSlot.Add(hoverSlot.Split(Mathf.Clamp(hoverSlot.quanity, 0, invSlot.item.maxStack - invSlot.quanity)));
+                                if (hoverSlot.item == null) break;
+                                continue;
+                            }
+                            if (invSlot.item == null && firstOpen == null) firstOpen = invSlot;
+                        }
+                        if (hoverSlot.item != null && firstOpen != null) firstOpen.Fill(hoverSlot.item, hoverSlot.Split(hoverSlot.quanity));
+                    }
+                }
                 break;
             default:
                 Debug.Log("Error: Cursor.State exception. Current State: " + state);
@@ -348,43 +383,6 @@ public static class Cursor
                 break;
         }
     }
-    //Triggered by InventoryController.Update() RayCast if LeftShift was held, storage was open and hoverSlot wasn't empty
-    public static void QuickTransfer(ItemSlot hoverSlot)
-    {
-        ItemSlot firstOpen = null;
-        if (hoverSlot.isInventory)
-        {
-            foreach (Transform slotOBJ in InventoryController.current.activeStorage.content)
-            {
-                ItemSlot storageSlot = slotOBJ.GetComponent<ItemSlot>();
-                if (storageSlot.item != null) 
-                {
-                    if (storageSlot.item.name != hoverSlot.item.name) continue;
-                    storageSlot.Add(hoverSlot.Split(Mathf.Clamp(hoverSlot.quanity, 0, storageSlot.item.maxStack - storageSlot.quanity)));
-                    if (hoverSlot.item == null) break;
-                    continue;
-                }
-                if (storageSlot.item == null && firstOpen == null) firstOpen = storageSlot;
-            }
-            if (hoverSlot.item != null && firstOpen != null) firstOpen.Fill(hoverSlot.item, hoverSlot.Split(hoverSlot.quanity));
-        }
-        else
-        {
-            foreach (Transform slotOBJ in InventoryController.current.content)
-            {
-                ItemSlot invSlot = slotOBJ.GetComponent<ItemSlot>();
-                if (invSlot.item != null) 
-                {
-                    if (invSlot.item.name != hoverSlot.item.name) continue;
-                    invSlot.Add(hoverSlot.Split(Mathf.Clamp(hoverSlot.quanity, 0, invSlot.item.maxStack - invSlot.quanity)));
-                    if (hoverSlot.item == null) break;
-                    continue;
-                }
-                if (invSlot.item == null && firstOpen == null) firstOpen = invSlot;
-            }
-            if (hoverSlot.item != null && firstOpen != null) firstOpen.Fill(hoverSlot.item, hoverSlot.Split(hoverSlot.quanity));
-        }
-    }
 
     public static void LeftClickSplit()
     {
@@ -393,6 +391,7 @@ public static class Cursor
         {
             if (dragged.item == null) dragged.Fill(itemSlot.item, itemSlot.Split(Mathf.Clamp(baseQuan / draggingSlots.Count, 1, itemSlot.item.maxStack)));
             else dragged.Add(itemSlot.Split(Mathf.Clamp(baseQuan / draggingSlots.Count, 1, dragged.item.maxStack - dragged.quanity)));
+            dragged.transform.GetComponent<Image>().color = new Color(0.392f, 0.392f, 0.392f, 1.000f);
         }
     }
 }

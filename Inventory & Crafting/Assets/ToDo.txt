@@ -1,7 +1,6 @@
 Remember: To just get it implimented and go threw later and organize
 
-Fix: Advanced split closing when sliding outside of AS box
-
-Fix: When swaping items that are the same but one is maxstack it logs extra. Need to log adding 
-
-Add: Highlight when leftDragging
+Prepare for launch;
+    Reorginize;
+        Consider: makeing advanced split a CursorState
+    Make: inventory. Only doing facotrio style

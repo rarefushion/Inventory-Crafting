@@ -16,7 +16,7 @@ public class ItemSlot: MonoBehaviour
     //ItemSlot state or location
     public bool isInventory = false;
     public bool isCrafting = false;
-
+    //Instatiate a new item and quanity for this itemSlot
     public void Fill(Item I, int quan)
     {
         image.gameObject.SetActive(true);
@@ -27,7 +27,7 @@ public class ItemSlot: MonoBehaviour
         image.sprite = item.image;
         if (isInventory) inventory.LogItem(this, quan, true);
     }
-
+    //Add a number and return the left overs
     public int Add(int quan)
     {
         int left;
@@ -46,7 +46,7 @@ public class ItemSlot: MonoBehaviour
         quanityText.text = quanity.ToString();
         return left;
     }
-
+    //Requast a quanity and return what can be given
     public int Split(int request)
     {
         int give = Mathf.Clamp(request, 0, quanity);
@@ -56,11 +56,9 @@ public class ItemSlot: MonoBehaviour
         if(quanity == 0) Clear();
         return give;
     }
-
+    //Swap items and quanitys of this slot and the input slot
     public void Swap(ItemSlot toSwap)
     {
-        if (isInventory && !toSwap.isInventory) inventory.LogItem(this, -quanity, false);
-        else if (!isInventory && toSwap.isInventory) inventory.LogItem(toSwap, -toSwap.quanity, false);
         string itemName = item.name;
         int quan = quanity;
         //Set this
@@ -73,6 +71,16 @@ public class ItemSlot: MonoBehaviour
         toSwap.quanityText.text = toSwap.quanity.ToString();
         toSwap.item = inventory.itemByName[itemName].item;
         toSwap.image.sprite = toSwap.item.image;
+        if (isInventory && !toSwap.isInventory) 
+        {
+            inventory.LogItem(this, quanity, false);
+            inventory.LogItem(this, -toSwap.quanity, false);
+        }
+        else if (!isInventory && toSwap.isInventory) 
+        {
+            inventory.LogItem(toSwap, -quanity, false);
+            inventory.LogItem(toSwap, toSwap.quanity, false);
+        }
     }
 
     public void Clear()
