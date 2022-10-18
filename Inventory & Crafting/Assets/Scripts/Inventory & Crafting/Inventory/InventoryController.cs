@@ -152,10 +152,15 @@ public class InventoryController : MonoBehaviour
 
     public void AdvancedItemSplit()
     {
+        if (advancedSplitItemQuanity <= 0) goto Finnish;
         string itemName = advancedSplitItemSlot.item.name;
         int quan = advancedSplitItemSlot.Split(advancedSplitItemQuanity);
         Cursor.itemSlot.Fill(itemByName[itemName].item, quan);
         Cursor.state = Cursor.CursorState.Filled;
+        Finnish:  
+        advancedSplitObject.GetChild(0).GetComponent<Slider>().SetValueWithoutNotify(0);
+        advancedSplitObject.GetChild(1).GetComponent<TMP_InputField>().text = "0";
+        advancedSplitItemQuanity = (int)advancedSplitObject.GetChild(0).GetComponent<Slider>().value;
         advancedSplitItemSlot = null;
         advancedSplitObject.gameObject.SetActive(false);
     }
@@ -272,7 +277,6 @@ public static class Cursor
                 else if (itemSlot.item.name == hoverSlot.item.name)
                 {
                     if (hoverSlot.quanity == hoverSlot.item.maxStack || draggingSlots.Count >= itemSlot.quanity) return;
-                    Debug.Log(hoverSlot.transform.GetComponent<Image>().color);
                     hoverSlot.transform.GetComponent<Image>().color = new Color(0.588f, 0.588f, 0.588f, 1.000f);
                     draggingSlots.Add(hoverSlot);
                     state = CursorState.LDrag;

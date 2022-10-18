@@ -1,6 +1,16 @@
 Remember: To just get it implimented and go threw later and organize
 
+Make: Crafting button
+
+Test: category in category
+
 Prepare for launch;
     Reorginize;
         Consider: makeing advanced split a CursorState
-    Make: inventory. Only doing facotrio style
+    Make; crafting. Only doing facotrio style
+        Make: Prefabs for crafting
+
+
+    V6
+-Fixed Advanced spliting 0
+-Made category and tab switching
