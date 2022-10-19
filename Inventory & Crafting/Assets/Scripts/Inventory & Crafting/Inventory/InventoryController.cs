@@ -135,7 +135,7 @@ public class InventoryController : MonoBehaviour
     {
         itemByName[slot.item.name].quanity += quanity;
         if (newItem) itemByName[slot.item.name].locations.Add(slot);
-        else if (quanity < 0) itemByName[slot.item.name].locations.Remove(slot);
+        else if (slot.quanity - quanity <= 0) itemByName[slot.item.name].locations.Remove(slot);
     }
 
     public void AdvancedItemSplitQuanityUpdate(bool slider)
@@ -206,8 +206,6 @@ public class InventoryController : MonoBehaviour
             if (i.name != null)
             {
                 slot.Fill(itemByName[i.name].item, i.quanity);
-                itemByName[i.name].quanity += i.quanity;
-                itemByName[i.name].locations.Add(slot);
             }
         }
     }
@@ -447,6 +445,7 @@ public class ItemQuanitySlots
 {
     public Item item;
     public int quanity;
+    //When looping thew all locations either make sure you aren't changing this list by spliting items or by making a new list of this one and looping threw the new one. Spliting items will call log item and if there are no items left it will remove it from this list.
     public List<ItemSlot> locations = new List<ItemSlot>();
 
     public ItemQuanitySlots()

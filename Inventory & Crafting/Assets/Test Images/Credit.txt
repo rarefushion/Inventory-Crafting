@@ -1,0 +1,4 @@
+Stone: https://opengameart.org/content/stones-64x64
+Cat: https://opengameart.org/content/pixel-cat
+Wood: https://opengameart.org/content/wood-plank-icon
+Chest: https://opengameart.org/content/wooden-chest-0

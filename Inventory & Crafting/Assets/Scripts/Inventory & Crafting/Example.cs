@@ -25,17 +25,15 @@ public class Example : MonoBehaviour
             foreach (Transform slotOBJ in IC.content)
             {
                 ItemSlot slot = slotOBJ.GetComponent<ItemSlot>();
-                if (Random.Range(0,5) == 4)
+                if (Random.Range(0, 5) == 4)
                 {
                     slot.item = null;
                     continue;
                 }
-                Item I = IC.items[Random.Range(0, IC.items.Count)];
+                Item I = IC.items[Random.Range(0, 3)];
                 int q = Random.Range(1, I.maxStack + 1);
                 slot.item = null;
                 slot.Fill(I, q);
-                IC.itemByName[I.name].quanity += q;
-                IC.itemByName[I.name].locations.Add(slot);
             }
         }
     }
@@ -43,7 +41,7 @@ public class Example : MonoBehaviour
     public void FixedUpdate() 
     {
         //Item Counter
-        for(int i = IC.items.Count; i > 0; i--)
+        for(int i = 3; i > 0; i--)
         {
             Transform counter = itemCounter.GetChild(i - 1);
             counter.GetChild(0).GetComponent<Image>().sprite = IC.items[i - 1].image;

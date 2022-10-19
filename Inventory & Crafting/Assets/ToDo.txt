@@ -1,6 +1,7 @@
 Remember: To just get it implimented and go threw later and organize
 
-Make: Crafting button
+Make; Crafting button
+    Make: string in requirments and products a dropdown of InventoryController>items
 
 Test: category in category
 
@@ -9,8 +10,3 @@ Prepare for launch;
         Consider: makeing advanced split a CursorState
     Make; crafting. Only doing facotrio style
         Make: Prefabs for crafting
-
-
-    V6
--Fixed Advanced spliting 0
--Made category and tab switching
