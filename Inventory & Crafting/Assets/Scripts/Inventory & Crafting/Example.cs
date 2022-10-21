@@ -41,7 +41,7 @@ public class Example : MonoBehaviour
     public void FixedUpdate() 
     {
         //Item Counter
-        for(int i = 3; i > 0; i--)
+        for(int i = 4; i > 0; i--)
         {
             Transform counter = itemCounter.GetChild(i - 1);
             counter.GetChild(0).GetComponent<Image>().sprite = IC.items[i - 1].image;

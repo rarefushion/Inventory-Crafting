@@ -7,15 +7,13 @@ public class CraftingButton : MonoBehaviour
 {
     public List<ItemNameAndQuanity> requirements = new List<ItemNameAndQuanity>();
     public List<ItemNameAndQuanity> product = new List<ItemNameAndQuanity>();
-    //Fills image with that of the item in the first product list
-    public bool fillImage;
 
     private InventoryController IC;
 
     public void Start()
     {
         IC = InventoryController.current;
-        if (fillImage) transform.GetChild(0).GetComponent<Image>().sprite = IC.itemByName[product[0].name].item.image;
+        if (transform.GetChild(0).GetComponent<Image>().sprite == null) transform.GetChild(0).GetComponent<Image>().sprite = IC.itemByName[product[0].name].item.image;
     }
 
     public void Clicked()

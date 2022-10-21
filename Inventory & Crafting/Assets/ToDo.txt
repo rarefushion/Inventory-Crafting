@@ -5,6 +5,8 @@ Make; Crafting button
 
 Test: category in category
 
+Fix: when making more than five chests and decrafting chests don't go below five but can still use decraft
+
 Prepare for launch;
     Reorginize;
         Consider: makeing advanced split a CursorState
