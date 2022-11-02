@@ -321,8 +321,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1761773732234073414}
   m_HandleRect: {fileID: 1761773732234073415}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 0.99999994
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -800,16 +800,8 @@ MonoBehaviour:
   numberOfSlots: 50
   prefabSlot: {fileID: 5248467932975276882, guid: f816531cf972a2f49b87d8f87409dd22, type: 3}
   content: {fileID: 1761773732706869711}
-  items:
-  - name: wood
-    image: {fileID: 21300000, guid: dacc4e8bfd1864e4d80bced0682576df, type: 3}
-    maxStack: 20
-  - name: stone
-    image: {fileID: 21300000, guid: 6aedd51f0c4718d4fb7f89e49c96decf, type: 3}
-    maxStack: 10
-  - name: cat
-    image: {fileID: 21300000, guid: 5a7b841d619edb2439d5c28fcfb3c177, type: 3}
-    maxStack: 1
+  items: []
+  activeStorage: {fileID: 0}
   cursorItem: {fileID: 0}
   canvasRacaster: {fileID: 0}
   eventSystem: {fileID: 0}

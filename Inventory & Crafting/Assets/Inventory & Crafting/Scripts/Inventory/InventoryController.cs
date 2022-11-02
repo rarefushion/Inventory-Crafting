@@ -11,6 +11,13 @@ using TMPro;
 public class InventoryController : MonoBehaviour
 {
     public int numberOfSlots;
+    public int hotbarReferences;
+    private List<ItemSlot> hotbarSlots = new List<ItemSlot>();
+    private List<ItemSlot> referencedSlots = new List<ItemSlot>();
+    private int hotbarSelectedSlot;
+    public ItemSlot HotbarSelectedSlot{get {return referencedSlots[-hotbarSelectedSlot + hotbarReferences];}}
+    private Transform hotbarSelectedST;
+    public Transform hotbar;
     public GameObject prefabSlot;
     public Transform content;
 
@@ -36,10 +43,10 @@ public class InventoryController : MonoBehaviour
     {
         current = this;
 
-        Cursor.itemSlot.image = cursorItem.GetChild(0).gameObject.GetComponent<Image>();
-        Cursor.itemSlot.quanityText = cursorItem.GetChild(1).gameObject.GetComponent<TMP_Text>();
-        Cursor.itemSlot.inventory = this;
-        Cursor.itemSlot.isInventory = true;
+        InventoryCursor.itemSlot.image = cursorItem.GetChild(0).gameObject.GetComponent<Image>();
+        InventoryCursor.itemSlot.quanityText = cursorItem.GetChild(1).gameObject.GetComponent<TMP_Text>();
+        InventoryCursor.itemSlot.inventory = this;
+        InventoryCursor.itemSlot.isInventory = true;
         //Generate itemByName Dictionary
         foreach(Item i in items)
         {
@@ -47,6 +54,16 @@ public class InventoryController : MonoBehaviour
         }
 
         SaveSystem.Load();
+
+        hotbarSelectedST = hotbar.GetChild(0);
+        for (int i = 0; i < hotbarReferences; i++) 
+        {
+            GameObject slot = Instantiate(prefabSlot, hotbar);
+            slot.GetComponent<Image>().raycastTarget = false;
+            hotbarSlots.Add(slot.GetComponent<ItemSlot>());
+            referencedSlots.Add(content.GetChild(numberOfSlots - 1  - i).gameObject.GetComponent<ItemSlot>());
+        }
+        hotbarSelectedST.SetSiblingIndex(hotbarReferences);
     }
 
     public void Update()
@@ -56,17 +73,17 @@ public class InventoryController : MonoBehaviour
         //if not clicking reset state
         if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1))
         {
-            if (Cursor.state == Cursor.CursorState.Transitioning || Cursor.state == Cursor.CursorState.LDrag || Cursor.state == Cursor.CursorState.RDrag || Cursor.state == Cursor.CursorState.QucikTransfering)
+            if (InventoryCursor.state == InventoryCursor.CursorState.Transitioning || InventoryCursor.state == InventoryCursor.CursorState.LDrag || InventoryCursor.state == InventoryCursor.CursorState.RDrag || InventoryCursor.state == InventoryCursor.CursorState.QucikTransfering)
             {
-                if (Cursor.state == Cursor.CursorState.LDrag) Cursor.LeftClickSplit();
+                if (InventoryCursor.state == InventoryCursor.CursorState.LDrag) InventoryCursor.LeftClickSplit();
 
-                if (Cursor.itemSlot.item != null) Cursor.state = Cursor.CursorState.Filled;
-                else Cursor.state = Cursor.CursorState.Neutral;
-                Cursor.draggingSlots.Clear();
+                if (InventoryCursor.itemSlot.item != null) InventoryCursor.state = InventoryCursor.CursorState.Filled;
+                else InventoryCursor.state = InventoryCursor.CursorState.Neutral;
+                InventoryCursor.draggingSlots.Clear();
             }
         }
         //if (left else right click) raycast from mouse position for slot, check if hotkeys are held else signal Cursor.Click() or Cursor.RightClick(). 
-        else if(Input.GetMouseButton(0) && Cursor.state != Cursor.CursorState.Transitioning)
+        else if(Input.GetMouseButton(0) && InventoryCursor.state != InventoryCursor.CursorState.Transitioning)
         {
             pointerEventData = new PointerEventData(eventSystem);
             pointerEventData.position = Input.mousePosition;
@@ -83,7 +100,7 @@ public class InventoryController : MonoBehaviour
             //Check AdvancedSplit Key
             if (Input.GetKey(KeyCode.LeftAlt) && slot.item != null)
             {
-                if (slot.item != null && Cursor.itemSlot.item == null)
+                if (slot.item != null && InventoryCursor.itemSlot.item == null)
                 {
                     advancedSplitObject.GetChild(0).GetComponent<Slider>().maxValue = slot.quanity;
                     advancedSplitItemSlot = slot;
@@ -91,9 +108,9 @@ public class InventoryController : MonoBehaviour
                     advancedSplitObject.position = slot.transform.position + new Vector3(0, -slot.transform.gameObject.GetComponent<RectTransform>().localScale.y / 2, 1);
                 }
             }
-            else if (slot != null) Cursor.Click(slot);
+            else if (slot != null) InventoryCursor.Click(slot);
         }
-        else if(Input.GetMouseButton(1) && Cursor.state != Cursor.CursorState.Transitioning)
+        else if(Input.GetMouseButton(1) && InventoryCursor.state != InventoryCursor.CursorState.Transitioning)
         {
             pointerEventData = new PointerEventData(eventSystem);
             pointerEventData.position = Input.mousePosition;
@@ -119,7 +136,7 @@ public class InventoryController : MonoBehaviour
             //Check AdvancedSplit Key
             if (Input.GetKey(KeyCode.LeftAlt))
             {
-                if (slot.item != null && Cursor.itemSlot.item == null)
+                if (slot.item != null && InventoryCursor.itemSlot.item == null)
                 {
                     advancedSplitObject.GetChild(0).GetComponent<Slider>().maxValue = slot.quanity;
                     advancedSplitItemSlot = slot;
@@ -127,8 +144,28 @@ public class InventoryController : MonoBehaviour
                     advancedSplitObject.position = slot.transform.position + new Vector3(0, -slot.transform.gameObject.GetComponent<RectTransform>().localScale.y / 2, 1);
                 }
             }
-            else if (slot != null) Cursor.RightClick(slot);
+            else if (slot != null) InventoryCursor.RightClick(slot);
         }
+        //Update hotbar
+        for (int i = hotbarReferences - 1; i >= 0; i--)
+        {
+            ItemSlot reference = referencedSlots[i], HB = hotbarSlots[-i + hotbarReferences - 1];
+            if (reference.item != HB.item || reference.quanity != HB.quanity)
+            {
+                HB.Clear();
+                if (reference.item != null) HB.Fill(reference.item, reference.quanity);
+            }  
+        }
+        //get mouseweel
+        if (Input.mouseScrollDelta.y != 0)
+        {
+            hotbarSelectedSlot += (int)Input.mouseScrollDelta.y;
+            if (hotbarSelectedSlot > hotbarReferences) hotbarSelectedSlot = 1;
+            if (hotbarSelectedSlot <= 0) hotbarSelectedSlot = hotbarReferences;
+            hotbarSelectedST.position = hotbarSlots[hotbarSelectedSlot - 1].transform.position;
+            Debug.Log(HotbarSelectedSlot.item.name);       
+        }
+        //update ui
     }
     //Slot item must not be null/Clear() Befor Log. Default Cursor functions do this already
     public void LogItem(ItemSlot slot, int quanity, bool newItem)
@@ -155,8 +192,8 @@ public class InventoryController : MonoBehaviour
         if (advancedSplitItemQuanity <= 0) goto Finnish;
         string itemName = advancedSplitItemSlot.item.name;
         int quan = advancedSplitItemSlot.Split(advancedSplitItemQuanity);
-        Cursor.itemSlot.Fill(itemByName[itemName].item, quan);
-        Cursor.state = Cursor.CursorState.Filled;
+        InventoryCursor.itemSlot.Fill(itemByName[itemName].item, quan);
+        InventoryCursor.state = InventoryCursor.CursorState.Filled;
         Finnish:  
         advancedSplitObject.GetChild(0).GetComponent<Slider>().SetValueWithoutNotify(0);
         advancedSplitObject.GetChild(1).GetComponent<TMP_InputField>().text = "0";
@@ -212,7 +249,7 @@ public class InventoryController : MonoBehaviour
 }
 
 [System.Serializable]
-public static class Cursor
+public static class InventoryCursor
 {
     //Both quanityText and image need to be set at start. 
     public static ItemSlot itemSlot = new ItemSlot();

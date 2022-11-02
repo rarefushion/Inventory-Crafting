@@ -1,7 +1,8 @@
 Remember: To just get it implimented and go threw later and organize
 
-Make; Crafting button
+Crafting; 
     Make: string in requirments and products a dropdown of InventoryController>items
+    Convert: crafting button into something that can be referenced by inventory controller so we call right click and even advanced split. May have to remake advanced split since it's not split its craft.
 
 Test: category in category
 
@@ -10,5 +11,4 @@ Fix: when making more than five chests and decrafting chests don't go below five
 Prepare for launch;
     Reorginize;
         Consider: makeing advanced split a CursorState
-    Make; crafting. Only doing facotrio style
-        Make: Prefabs for crafting
+    Make: Prefabs for crafting

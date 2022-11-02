@@ -90,14 +90,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37b7d0aad65a37e48bd5c458abc50eba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  requirements:
-  - name: wood
-    quanity: 1
-  - name: stone
-    quanity: 2
-  product:
-  - name: chest
-    quanity: 1
+  requirements: []
+  product: []
 --- !u!114 &5118728351409002339
 MonoBehaviour:
   m_ObjectHideFlags: 0
