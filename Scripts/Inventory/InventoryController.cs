@@ -162,8 +162,7 @@ public class InventoryController : MonoBehaviour
             hotbarSelectedSlot += (int)Input.mouseScrollDelta.y;
             if (hotbarSelectedSlot > hotbarReferences) hotbarSelectedSlot = 1;
             if (hotbarSelectedSlot <= 0) hotbarSelectedSlot = hotbarReferences;
-            hotbarSelectedST.position = hotbarSlots[hotbarSelectedSlot - 1].transform.position;
-            Debug.Log(HotbarSelectedSlot.item.name);       
+            hotbarSelectedST.position = hotbarSlots[hotbarSelectedSlot - 1].transform.position;    
         }
         //update ui
     }
