@@ -14,7 +14,7 @@ public class InventoryController : MonoBehaviour
     public int hotbarReferences;
     private List<ItemSlot> hotbarSlots = new List<ItemSlot>();
     private List<ItemSlot> referencedSlots = new List<ItemSlot>();
-    private int hotbarSelectedSlot;
+    private int hotbarSelectedSlot = 1;
     public ItemSlot HotbarSelectedSlot{get {return referencedSlots[-hotbarSelectedSlot + hotbarReferences];}}
     private Transform hotbarSelectedST;
     public Transform hotbar;
@@ -55,6 +55,7 @@ public class InventoryController : MonoBehaviour
 
         SaveSystem.Load();
 
+        hotbarSelectedSlot = 1;
         hotbarSelectedST = hotbar.GetChild(0);
         for (int i = 0; i < hotbarReferences; i++) 
         {
@@ -69,7 +70,7 @@ public class InventoryController : MonoBehaviour
     public void Update()
     {
         //move image for item held by cursor
-        cursorItem.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) + Vector3.forward;
+        cursorItem.position = Camera.main.ScreenToWorldPoint(Input.mousePosition + Vector3.forward);
         //if not clicking reset state
         if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1))
         {
