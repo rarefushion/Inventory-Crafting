@@ -7,22 +7,22 @@ using TMPro;
 [System.Serializable]
 public class ItemSlot: MonoBehaviour
 {
-    //If you change quanity manually remember to update quanityText and InventoryController.itemByName.quanity
-    public int quanity;
-    public TMP_Text quanityText;
+    //If you change quantity manually remember to update quantityText and InventoryController.itemByName.quantity
+    public int quantity;
+    public TMP_Text quantityText;
     public Item item;
     public Image image;
     public InventoryController inventory;
     //ItemSlot state or location
     public bool isInventory = false;
     public bool isCrafting = false;
-    //Instatiate a new item and quanity for this itemSlot
+    //Instantiate a new item and quantity for this itemSlot
     public void Fill(Item I, int quan)
     {
         image.gameObject.SetActive(true);
-        quanityText.gameObject.SetActive(true);
-        quanity = quan;
-        quanityText.text = quanity.ToString();
+        quantityText.gameObject.SetActive(true);
+        quantity = quan;
+        quantityText.text = quantity.ToString();
         item = I;
         image.sprite = item.image;
         if (isInventory) inventory.LogItem(this, quan, true);
@@ -31,66 +31,66 @@ public class ItemSlot: MonoBehaviour
     public int Add(int quan)
     {
         int left;
-        if (quan + quanity > item.maxStack)
+        if (quan + quantity > item.maxStack)
         {
-            left = (quan + quanity) - item.maxStack;
+            left = (quan + quantity) - item.maxStack;
             if (isInventory) inventory.LogItem(this, quan - left, false);
-            quanity = Mathf.Clamp(quan + quanity, 0, item.maxStack);
+            quantity = Mathf.Clamp(quan + quantity, 0, item.maxStack);
         }
         else
         {
             left = 0;
             if (isInventory) inventory.LogItem(this, quan, false);
-            quanity += quan;
+            quantity += quan;
         }
-        quanityText.text = quanity.ToString();
+        quantityText.text = quantity.ToString();
         return left;
     }
-    //Requast a quanity and return what can be given
+    //Request a quantity and return what can be given
     public int Split(int request)
     {
-        int give = Mathf.Clamp(request, 0, quanity);
+        int give = Mathf.Clamp(request, 0, quantity);
         if (isInventory) inventory.LogItem(this, -give, false);
-        quanity = Mathf.Clamp(quanity - request, 0, item.maxStack);
-        quanityText.text = quanity.ToString();
-        if(quanity == 0) Clear();
+        quantity = Mathf.Clamp(quantity - request, 0, item.maxStack);
+        quantityText.text = quantity.ToString();
+        if(quantity == 0) Clear();
         return give;
     }
-    //Swap items and quanitys of this slot and the input slot
+    //Swap items and quantities of this slot and the input slot
     public void Swap(ItemSlot toSwap)
     {
         string itemName = item.name;
-        int quan = quanity;
+        int quan = quantity;
         //Set this
-        quanity = toSwap.quanity;
-        quanityText.text = quanity.ToString();
+        quantity = toSwap.quantity;
+        quantityText.text = quantity.ToString();
         item = toSwap.item;
         image.sprite = item.image;
         //Set toSwap
-        toSwap.quanity = quan;
-        toSwap.quanityText.text = toSwap.quanity.ToString();
+        toSwap.quantity = quan;
+        toSwap.quantityText.text = toSwap.quantity.ToString();
         toSwap.item = inventory.itemByName[itemName].item;
         toSwap.image.sprite = toSwap.item.image;
         if (isInventory && !toSwap.isInventory) 
         {
-            inventory.LogItem(this, quanity, false);
-            inventory.LogItem(this, -toSwap.quanity, false);
+            inventory.LogItem(this, quantity, false);
+            inventory.LogItem(this, -toSwap.quantity, false);
         }
         else if (!isInventory && toSwap.isInventory) 
         {
-            inventory.LogItem(toSwap, -quanity, false);
-            inventory.LogItem(toSwap, toSwap.quanity, false);
+            inventory.LogItem(toSwap, -quantity, false);
+            inventory.LogItem(toSwap, toSwap.quantity, false);
         }
     }
 
     public void Clear()
     {
-        if (isInventory) inventory.LogItem(this, -quanity, false);
-        quanity = 0;
-        quanityText.text = quanity.ToString();
+        if (isInventory) inventory.LogItem(this, -quantity, false);
+        quantity = 0;
+        quantityText.text = quantity.ToString();
         item = null;
         image.sprite = null;
         image.gameObject.SetActive(false);
-        quanityText.gameObject.SetActive(false);
+        quantityText.gameObject.SetActive(false);
     }
 }

@@ -22,19 +22,19 @@ public class InventoryController : MonoBehaviour
     public Transform content;
 
     public List<Item> items = new List<Item>();
-    //The Dictionary contains 1 of every item, the slot locations of all the items and the total quanity of every item. If you remove or add items from the inventory remember to log it with LogItem(). Default ItemSlot functions do this already.
-    public Dictionary<string, ItemQuanitySlots> itemByName = new Dictionary<string, ItemQuanitySlots>();
-    public List<List<ItemNameAndQuanity>> itemsToSave = new List<List<ItemNameAndQuanity>>();
+    //The Dictionary contains 1 of every item, the slot locations of all the items and the total quantity of every item. If you remove or add items from the inventory remember to log it with LogItem(). Default ItemSlot functions do this already.
+    public Dictionary<string, ItemQuantitySlots> itemByName = new Dictionary<string, ItemQuantitySlots>();
+    public List<List<ItemNameAndQuantity>> itemsToSave = new List<List<ItemNameAndQuantity>>();
     public Storage activeStorage;
 
     public Transform cursorItem;
-    public GraphicRaycaster canvasRacaster;
+    public GraphicRaycaster canvasRaycaster;
     PointerEventData pointerEventData;
     public EventSystem eventSystem;
 
     public Transform advancedSplitObject;
     public ItemSlot advancedSplitItemSlot;
-    [HideInInspector] public int advancedSplitItemQuanity;
+    [HideInInspector] public int advancedSplitItemQuantity;
 
     public static InventoryController current;
 
@@ -44,13 +44,13 @@ public class InventoryController : MonoBehaviour
         current = this;
 
         InventoryCursor.itemSlot.image = cursorItem.GetChild(0).gameObject.GetComponent<Image>();
-        InventoryCursor.itemSlot.quanityText = cursorItem.GetChild(1).gameObject.GetComponent<TMP_Text>();
+        InventoryCursor.itemSlot.quantityText = cursorItem.GetChild(1).gameObject.GetComponent<TMP_Text>();
         InventoryCursor.itemSlot.inventory = this;
         InventoryCursor.itemSlot.isInventory = true;
         //Generate itemByName Dictionary
         foreach(Item i in items)
         {
-            itemByName.Add(i.name, new ItemQuanitySlots(i));
+            itemByName.Add(i.name, new ItemQuantitySlots(i));
         }
 
         SaveSystem.Load();
@@ -74,7 +74,7 @@ public class InventoryController : MonoBehaviour
         //if not clicking reset state
         if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1))
         {
-            if (InventoryCursor.state == InventoryCursor.CursorState.Transitioning || InventoryCursor.state == InventoryCursor.CursorState.LDrag || InventoryCursor.state == InventoryCursor.CursorState.RDrag || InventoryCursor.state == InventoryCursor.CursorState.QucikTransfering)
+            if (InventoryCursor.state == InventoryCursor.CursorState.Transitioning || InventoryCursor.state == InventoryCursor.CursorState.LDrag || InventoryCursor.state == InventoryCursor.CursorState.RDrag || InventoryCursor.state == InventoryCursor.CursorState.QuickTransferring)
             {
                 if (InventoryCursor.state == InventoryCursor.CursorState.LDrag) InventoryCursor.LeftClickSplit();
 
@@ -89,9 +89,9 @@ public class InventoryController : MonoBehaviour
             pointerEventData = new PointerEventData(eventSystem);
             pointerEventData.position = Input.mousePosition;
             List<RaycastResult> raycastResults = new List<RaycastResult>();
-            canvasRacaster.Raycast(pointerEventData, raycastResults);
+            canvasRaycaster.Raycast(pointerEventData, raycastResults);
             ItemSlot slot = null;
-            //if (slot under croshair)
+            //if (slot under crosshair)
             foreach(RaycastResult result in raycastResults)
             {
                 if (result.gameObject.name == "$Slot(Clone)") slot = result.gameObject.GetComponent<ItemSlot>();
@@ -103,7 +103,7 @@ public class InventoryController : MonoBehaviour
             {
                 if (slot.item != null && InventoryCursor.itemSlot.item == null)
                 {
-                    advancedSplitObject.GetChild(0).GetComponent<Slider>().maxValue = slot.quanity;
+                    advancedSplitObject.GetChild(0).GetComponent<Slider>().maxValue = slot.quantity;
                     advancedSplitItemSlot = slot;
                     advancedSplitObject.gameObject.SetActive(true);
                     advancedSplitObject.position = slot.transform.position + new Vector3(0, -slot.transform.gameObject.GetComponent<RectTransform>().localScale.y / 2, 1);
@@ -116,9 +116,9 @@ public class InventoryController : MonoBehaviour
             pointerEventData = new PointerEventData(eventSystem);
             pointerEventData.position = Input.mousePosition;
             List<RaycastResult> raycastResults = new List<RaycastResult>();
-            canvasRacaster.Raycast(pointerEventData, raycastResults);
+            canvasRaycaster.Raycast(pointerEventData, raycastResults);
             ItemSlot slot = null;
-            //if (slot under croshair)
+            //if (slot under crosshair)
             foreach(RaycastResult result in raycastResults)
             {
                 if (result.gameObject.name == "$Slot(Clone)") slot = result.gameObject.GetComponent<ItemSlot>();
@@ -129,7 +129,7 @@ public class InventoryController : MonoBehaviour
             {
                 advancedSplitObject.GetChild(0).GetComponent<Slider>().SetValueWithoutNotify(0);
                 advancedSplitObject.GetChild(1).GetComponent<TMP_InputField>().text = "0";
-                advancedSplitItemQuanity = (int)advancedSplitObject.GetChild(0).GetComponent<Slider>().value;
+                advancedSplitItemQuantity = (int)advancedSplitObject.GetChild(0).GetComponent<Slider>().value;
                 advancedSplitItemSlot = null;
                 advancedSplitObject.gameObject.SetActive(false);
             }
@@ -139,7 +139,7 @@ public class InventoryController : MonoBehaviour
             {
                 if (slot.item != null && InventoryCursor.itemSlot.item == null)
                 {
-                    advancedSplitObject.GetChild(0).GetComponent<Slider>().maxValue = slot.quanity;
+                    advancedSplitObject.GetChild(0).GetComponent<Slider>().maxValue = slot.quantity;
                     advancedSplitItemSlot = slot;
                     advancedSplitObject.gameObject.SetActive(true);
                     advancedSplitObject.position = slot.transform.position + new Vector3(0, -slot.transform.gameObject.GetComponent<RectTransform>().localScale.y / 2, 1);
@@ -151,13 +151,13 @@ public class InventoryController : MonoBehaviour
         for (int i = hotbarReferences - 1; i >= 0; i--)
         {
             ItemSlot reference = referencedSlots[i], HB = hotbarSlots[-i + hotbarReferences - 1];
-            if (reference.item != HB.item || reference.quanity != HB.quanity)
+            if (reference.item != HB.item || reference.quantity != HB.quantity)
             {
                 HB.Clear();
-                if (reference.item != null) HB.Fill(reference.item, reference.quanity);
+                if (reference.item != null) HB.Fill(reference.item, reference.quantity);
             }  
         }
-        //get mouseweel
+        //get mouseWheel
         if (Input.mouseScrollDelta.y != 0)
         {
             hotbarSelectedSlot += (int)Input.mouseScrollDelta.y;
@@ -167,37 +167,37 @@ public class InventoryController : MonoBehaviour
         }
         //update ui
     }
-    //Slot item must not be null/Clear() Befor Log. Default Cursor functions do this already
-    public void LogItem(ItemSlot slot, int quanity, bool newItem)
+    //Slot item must not be null/Clear() Before Log. Default Cursor functions do this already
+    public void LogItem(ItemSlot slot, int quantity, bool newItem)
     {
-        itemByName[slot.item.name].quanity += quanity;
+        itemByName[slot.item.name].quantity += quantity;
         if (newItem) itemByName[slot.item.name].locations.Add(slot);
-        else if (slot.quanity - quanity <= 0) itemByName[slot.item.name].locations.Remove(slot);
+        else if (slot.quantity - quantity <= 0) itemByName[slot.item.name].locations.Remove(slot);
     }
 
-    public void AdvancedItemSplitQuanityUpdate(bool slider)
+    public void AdvancedItemSplitQuantityUpdate(bool slider)
     {
         if (slider) advancedSplitObject.GetChild(1).GetComponent<TMP_InputField>().text = advancedSplitObject.GetChild(0).GetComponent<Slider>().value.ToString();
         else 
         {
-            float i = Mathf.Clamp(float.Parse(advancedSplitObject.GetChild(1).GetComponent<TMP_InputField>().text), 0, advancedSplitItemSlot.quanity);
+            float i = Mathf.Clamp(float.Parse(advancedSplitObject.GetChild(1).GetComponent<TMP_InputField>().text), 0, advancedSplitItemSlot.quantity);
             advancedSplitObject.GetChild(0).GetComponent<Slider>().SetValueWithoutNotify(i);
             advancedSplitObject.GetChild(1).GetComponent<TMP_InputField>().text = i.ToString();
         }
-        advancedSplitItemQuanity = (int)advancedSplitObject.GetChild(0).GetComponent<Slider>().value;
+        advancedSplitItemQuantity = (int)advancedSplitObject.GetChild(0).GetComponent<Slider>().value;
     }
 
     public void AdvancedItemSplit()
     {
-        if (advancedSplitItemQuanity <= 0) goto Finnish;
+        if (advancedSplitItemQuantity <= 0) goto Finnish;
         string itemName = advancedSplitItemSlot.item.name;
-        int quan = advancedSplitItemSlot.Split(advancedSplitItemQuanity);
+        int quan = advancedSplitItemSlot.Split(advancedSplitItemQuantity);
         InventoryCursor.itemSlot.Fill(itemByName[itemName].item, quan);
         InventoryCursor.state = InventoryCursor.CursorState.Filled;
         Finnish:  
         advancedSplitObject.GetChild(0).GetComponent<Slider>().SetValueWithoutNotify(0);
         advancedSplitObject.GetChild(1).GetComponent<TMP_InputField>().text = "0";
-        advancedSplitItemQuanity = (int)advancedSplitObject.GetChild(0).GetComponent<Slider>().value;
+        advancedSplitItemQuantity = (int)advancedSplitObject.GetChild(0).GetComponent<Slider>().value;
         advancedSplitItemSlot = null;
         advancedSplitObject.gameObject.SetActive(false);
     }
@@ -211,30 +211,30 @@ public class InventoryController : MonoBehaviour
             slot.isInventory = true;
             slot.item = null;
         }
-        itemsToSave.Add(new List<ItemNameAndQuanity>());
+        itemsToSave.Add(new List<ItemNameAndQuantity>());
     }
 
     public void UpdateItemsToSave()
     {
-        List<ItemNameAndQuanity> inventoryList = itemsToSave[0];
+        List<ItemNameAndQuantity> inventoryList = itemsToSave[0];
         inventoryList.Clear();
         foreach (Transform slotOBJ in content)
         {
             ItemSlot slot = slotOBJ.GetComponent<ItemSlot>();
-            if (slot.item == null) inventoryList.Add(new ItemNameAndQuanity(null, 0));
-            else inventoryList.Add(new ItemNameAndQuanity(slot.item.name, slot.quanity));
+            if (slot.item == null) inventoryList.Add(new ItemNameAndQuantity(null, 0));
+            else inventoryList.Add(new ItemNameAndQuantity(slot.item.name, slot.quantity));
         }
     }
 
     public void LoadSlotsFromItemsToSave()
     {
-        List<ItemNameAndQuanity> inventoryList = itemsToSave[0];
+        List<ItemNameAndQuantity> inventoryList = itemsToSave[0];
         if (inventoryList.Count != numberOfSlots)
         {
             Debug.Log("numberOfSlots in InventoryController changed this will not be corrected for");
         }
 
-        foreach (ItemNameAndQuanity i in inventoryList)
+        foreach (ItemNameAndQuantity i in inventoryList)
         {
             ItemSlot slot = Instantiate(prefabSlot, content).GetComponent<ItemSlot>();
             slot.inventory = this;
@@ -242,7 +242,7 @@ public class InventoryController : MonoBehaviour
             slot.item = null;
             if (i.name != null)
             {
-                slot.Fill(itemByName[i.name].item, i.quanity);
+                slot.Fill(itemByName[i.name].item, i.quantity);
             }
         }
     }
@@ -251,17 +251,17 @@ public class InventoryController : MonoBehaviour
 [System.Serializable]
 public static class InventoryCursor
 {
-    //Both quanityText and image need to be set at start. 
+    //Both quantityText and image need to be set at start. 
     public static ItemSlot itemSlot = new ItemSlot();
-    //Cursor state. Neutral no item, pickup item exists, LDrag and RDrag item exists and currently draging.
-    public enum CursorState {Neutral, Transitioning, Filled, LDrag, RDrag, QucikTransfering};
+    //Cursor state. Neutral no item, pickup item exists, LDrag and RDrag item exists and currently dragging.
+    public enum CursorState {Neutral, Transitioning, Filled, LDrag, RDrag, QuickTransferring};
     public static CursorState state = CursorState.Neutral;
     public static List<ItemSlot> draggingSlots = new List<ItemSlot>();
     //Triggered by InventoryController.Update() RayCast.
     public static void Click(ItemSlot hoverSlot)
     {
         //Check modifiers
-        if ((state == CursorState.Neutral || state == CursorState.Filled) && Input.GetKey(KeyCode.LeftShift) && itemSlot.inventory.activeStorage != null) state = CursorState.QucikTransfering;
+        if ((state == CursorState.Neutral || state == CursorState.Filled) && Input.GetKey(KeyCode.LeftShift) && itemSlot.inventory.activeStorage != null) state = CursorState.QuickTransferring;
         
         if (draggingSlots.Contains(hoverSlot)) return;
         switch (state)
@@ -269,7 +269,7 @@ public static class InventoryCursor
             case CursorState.Neutral:
                 if (hoverSlot.item != null)
                 {
-                    itemSlot.Fill(hoverSlot.item, hoverSlot.quanity);
+                    itemSlot.Fill(hoverSlot.item, hoverSlot.quantity);
                     hoverSlot.Clear();
                     state = CursorState.Transitioning;
                 }
@@ -283,7 +283,7 @@ public static class InventoryCursor
                 }
                 else if (itemSlot.item.name == hoverSlot.item.name)
                 {
-                    if(hoverSlot.quanity == hoverSlot.item.maxStack)
+                    if(hoverSlot.quantity == hoverSlot.item.maxStack)
                     {    
                         hoverSlot.Swap(itemSlot);
                         state = CursorState.Transitioning;
@@ -304,14 +304,14 @@ public static class InventoryCursor
             case CursorState.LDrag:
                 if (hoverSlot.item == null)
                 {
-                    if (draggingSlots.Count >= itemSlot.quanity) return;
+                    if (draggingSlots.Count >= itemSlot.quantity) return;
                     hoverSlot.transform.GetComponent<Image>().color = new Color(0.588f, 0.588f, 0.588f, 1.000f);
                     draggingSlots.Add(hoverSlot);
                     state = CursorState.LDrag;
                 }
                 else if (itemSlot.item.name == hoverSlot.item.name)
                 {
-                    if (hoverSlot.quanity == hoverSlot.item.maxStack || draggingSlots.Count >= itemSlot.quanity) return;
+                    if (hoverSlot.quantity == hoverSlot.item.maxStack || draggingSlots.Count >= itemSlot.quantity) return;
                     hoverSlot.transform.GetComponent<Image>().color = new Color(0.588f, 0.588f, 0.588f, 1.000f);
                     draggingSlots.Add(hoverSlot);
                     state = CursorState.LDrag;
@@ -319,7 +319,7 @@ public static class InventoryCursor
                 break;
             case CursorState.RDrag:
                 break;
-            case CursorState.QucikTransfering:
+            case CursorState.QuickTransferring:
                 if (hoverSlot.item != null)
                 {
                     ItemSlot firstOpen = null;
@@ -331,13 +331,13 @@ public static class InventoryCursor
                             if (storageSlot.item != null) 
                             {
                                 if (storageSlot.item.name != hoverSlot.item.name) continue;
-                                storageSlot.Add(hoverSlot.Split(Mathf.Clamp(hoverSlot.quanity, 0, storageSlot.item.maxStack - storageSlot.quanity)));
+                                storageSlot.Add(hoverSlot.Split(Mathf.Clamp(hoverSlot.quantity, 0, storageSlot.item.maxStack - storageSlot.quantity)));
                                 if (hoverSlot.item == null) break;
                                 continue;
                             }
                             if (storageSlot.item == null && firstOpen == null) firstOpen = storageSlot;
                         }
-                        if (hoverSlot.item != null && firstOpen != null) firstOpen.Fill(hoverSlot.item, hoverSlot.Split(hoverSlot.quanity));
+                        if (hoverSlot.item != null && firstOpen != null) firstOpen.Fill(hoverSlot.item, hoverSlot.Split(hoverSlot.quantity));
                     }
                     else
                     {
@@ -347,13 +347,13 @@ public static class InventoryCursor
                             if (invSlot.item != null) 
                             {
                                 if (invSlot.item.name != hoverSlot.item.name) continue;
-                                invSlot.Add(hoverSlot.Split(Mathf.Clamp(hoverSlot.quanity, 0, invSlot.item.maxStack - invSlot.quanity)));
+                                invSlot.Add(hoverSlot.Split(Mathf.Clamp(hoverSlot.quantity, 0, invSlot.item.maxStack - invSlot.quantity)));
                                 if (hoverSlot.item == null) break;
                                 continue;
                             }
                             if (invSlot.item == null && firstOpen == null) firstOpen = invSlot;
                         }
-                        if (hoverSlot.item != null && firstOpen != null) firstOpen.Fill(hoverSlot.item, hoverSlot.Split(hoverSlot.quanity));
+                        if (hoverSlot.item != null && firstOpen != null) firstOpen.Fill(hoverSlot.item, hoverSlot.Split(hoverSlot.quantity));
                     }
                 }
                 break;
@@ -372,7 +372,7 @@ public static class InventoryCursor
                 if (hoverSlot.item != null)
                 {
                     string itemName = hoverSlot.item.name;
-                    int quan = hoverSlot.Split(Mathf.Clamp((hoverSlot.quanity + 1) / 2, 0, hoverSlot.item.maxStack));
+                    int quan = hoverSlot.Split(Mathf.Clamp((hoverSlot.quantity + 1) / 2, 0, hoverSlot.item.maxStack));
                     itemSlot.Fill(InventoryController.current.itemByName[itemName].item, quan);
                     state = CursorState.Transitioning;
                 }
@@ -389,7 +389,7 @@ public static class InventoryCursor
                 }
                 else if (itemSlot.item.name == hoverSlot.item.name) 
                 {
-                    int quan = itemSlot.Split(Mathf.Clamp(1, 0, hoverSlot.item.maxStack - hoverSlot.quanity));
+                    int quan = itemSlot.Split(Mathf.Clamp(1, 0, hoverSlot.item.maxStack - hoverSlot.quantity));
                     hoverSlot.Add(quan);
                     draggingSlots.Add(hoverSlot);
                     if (itemSlot.item != null) state = CursorState.RDrag;
@@ -410,7 +410,7 @@ public static class InventoryCursor
                 }
                 else if (itemSlot.item.name == hoverSlot.item.name) 
                 {
-                    int quan = itemSlot.Split(Mathf.Clamp(1, 0, hoverSlot.item.maxStack - hoverSlot.quanity));
+                    int quan = itemSlot.Split(Mathf.Clamp(1, 0, hoverSlot.item.maxStack - hoverSlot.quantity));
                     hoverSlot.Add(quan);
                     draggingSlots.Add(hoverSlot);
                     if (itemSlot.item != null) state = CursorState.RDrag;
@@ -425,11 +425,11 @@ public static class InventoryCursor
 
     public static void LeftClickSplit()
     {
-        int baseQuan = itemSlot.quanity;
+        int baseQuan = itemSlot.quantity;
         foreach (ItemSlot dragged in draggingSlots)
         {
             if (dragged.item == null) dragged.Fill(itemSlot.item, itemSlot.Split(Mathf.Clamp(baseQuan / draggingSlots.Count, 1, itemSlot.item.maxStack)));
-            else dragged.Add(itemSlot.Split(Mathf.Clamp(baseQuan / draggingSlots.Count, 1, dragged.item.maxStack - dragged.quanity)));
+            else dragged.Add(itemSlot.Split(Mathf.Clamp(baseQuan / draggingSlots.Count, 1, dragged.item.maxStack - dragged.quantity)));
             dragged.transform.GetComponent<Image>().color = new Color(0.392f, 0.392f, 0.392f, 1.000f);
         }
     }
@@ -440,8 +440,8 @@ public static class SaveSystem
     //Make sure all Storage is Close() and InventoryController UpdateItemsToSave()
     public static void Save()
     {
-        List<List<ItemNameAndQuanity>> itemsToSave = InventoryController.current.itemsToSave;
-        XmlSerializer serializer = new XmlSerializer (typeof(List<List<ItemNameAndQuanity>>));
+        List<List<ItemNameAndQuantity>> itemsToSave = InventoryController.current.itemsToSave;
+        XmlSerializer serializer = new XmlSerializer (typeof(List<List<ItemNameAndQuantity>>));
         using (StringWriter sw = new StringWriter())
         {
             serializer.Serialize(sw, itemsToSave);
@@ -451,7 +451,7 @@ public static class SaveSystem
 
     public static void Load()
     { 
-        XmlSerializer serializer = new XmlSerializer (typeof(List<List<ItemNameAndQuanity>>));
+        XmlSerializer serializer = new XmlSerializer (typeof(List<List<ItemNameAndQuantity>>));
         string wholeFile = PlayerPrefs.GetString("Items");
         if (wholeFile.Length == 0)
         {
@@ -462,7 +462,7 @@ public static class SaveSystem
         {
             using (var reader = new StringReader(wholeFile))
             {
-                InventoryController.current.itemsToSave = serializer.Deserialize(reader) as List<List<ItemNameAndQuanity>>;
+                InventoryController.current.itemsToSave = serializer.Deserialize(reader) as List<List<ItemNameAndQuantity>>;
                 InventoryController.current.LoadSlotsFromItemsToSave();
             }
         }
@@ -476,48 +476,48 @@ public class Item
     public Sprite image;
     public int maxStack;
 }
-//Used in itemByName to keep track of item amout and slot locations
+//Used in itemByName to keep track of item amount and slot locations
 [System.Serializable]
-public class ItemQuanitySlots
+public class ItemQuantitySlots
 {
     public Item item;
-    public int quanity;
-    //When looping thew all locations either make sure you aren't changing this list by spliting items or by making a new list of this one and looping threw the new one. Spliting items will call log item and if there are no items left it will remove it from this list.
+    public int quantity;
+    //When looping thew all locations either make sure you aren't changing this list by splitting items or by making a new list of this one and looping threw the new one. Splitting items will call log item and if there are no items left it will remove it from this list.
     public List<ItemSlot> locations = new List<ItemSlot>();
 
-    public ItemQuanitySlots()
+    public ItemQuantitySlots()
     {
 
     }
 
-    public ItemQuanitySlots(Item I)
+    public ItemQuantitySlots(Item I)
     {
         item = I;
-        quanity = 0;
+        quantity = 0;
     }
 
-    public ItemQuanitySlots(Item I, int Q)
+    public ItemQuantitySlots(Item I, int Q)
     {
         item = I;
-        quanity = Q;
+        quantity = Q;
     }
 }
 
 //Minimize the data needed to be stored and saved
 [System.Serializable]
-public class ItemNameAndQuanity
+public class ItemNameAndQuantity
 {
     public string name;
-    public int quanity;
+    public int quantity;
 
-    public ItemNameAndQuanity ()
+    public ItemNameAndQuantity ()
     {
 
     }
 
-    public ItemNameAndQuanity (string N, int Q)
+    public ItemNameAndQuantity (string N, int Q)
     {
         name = N;
-        quanity = Q;
+        quantity = Q;
     }
 }

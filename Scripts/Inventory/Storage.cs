@@ -12,7 +12,7 @@ public class Storage : MonoBehaviour
     public GameObject prefabSlot;
     public Transform content;
     
-    public GraphicRaycaster canvasRacaster;
+    public GraphicRaycaster canvasRaycaster;
     PointerEventData pointerEventData;
     public EventSystem eventSystem;
 
@@ -24,17 +24,17 @@ public class Storage : MonoBehaviour
             slot.inventory = InventoryController.current;
             slot.item = null;
         }
-        InventoryController.current.itemsToSave.Add(new List<ItemNameAndQuanity>());
+        InventoryController.current.itemsToSave.Add(new List<ItemNameAndQuantity>());
     }
 
     public void Open()
     {
         transform.GetChild(0).gameObject.SetActive(true);
-        foreach (ItemNameAndQuanity INQ in InventoryController.current.itemsToSave[storageID])
+        foreach (ItemNameAndQuantity INQ in InventoryController.current.itemsToSave[storageID])
         {
             ItemSlot slot = Instantiate(prefabSlot, content).GetComponent<ItemSlot>();
             slot.inventory = InventoryController.current;
-            if (INQ.name != null) slot.Fill(InventoryController.current.itemByName[INQ.name].item, INQ.quanity);
+            if (INQ.name != null) slot.Fill(InventoryController.current.itemByName[INQ.name].item, INQ.quantity);
             else slot.item = null;
         }
         InventoryController.current.activeStorage = this;
@@ -43,15 +43,15 @@ public class Storage : MonoBehaviour
     public void Close()
     {
         List<Transform> destroy = new List<Transform>();
-        List<ItemNameAndQuanity> itemsToAdd = new List<ItemNameAndQuanity>();
+        List<ItemNameAndQuantity> itemsToAdd = new List<ItemNameAndQuantity>();
         foreach (Transform slotTransform in content)
         {
             ItemSlot slot = slotTransform.gameObject.GetComponent<ItemSlot>();
-            ItemNameAndQuanity toAdd = new ItemNameAndQuanity();
+            ItemNameAndQuantity toAdd = new ItemNameAndQuantity();
             if (slot.item != null)
             {
                 toAdd.name = slot.item.name;
-                toAdd.quanity = slot.quanity;
+                toAdd.quantity = slot.quantity;
             }
             itemsToAdd.Add(toAdd);
             destroy.Add(slotTransform);

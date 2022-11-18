@@ -20,7 +20,7 @@ public class Example : MonoBehaviour
             if (IC.itemsToSave.Count - 1 < c.storageID) c.Initialize();
         }
         //Fill slot with random Item
-        if (IC.itemByName[IC.items[0].name].quanity == 0)
+        if (IC.itemByName[IC.items[0].name].quantity == 0)
         {
             foreach (Transform slotOBJ in IC.content)
             {
@@ -45,13 +45,13 @@ public class Example : MonoBehaviour
         {
             Transform counter = itemCounter.GetChild(i - 1);
             counter.GetChild(0).GetComponent<Image>().sprite = IC.items[i - 1].image;
-            counter.GetChild(1).GetComponent<TMP_Text>().text = IC.items[i - 1].name + "s: " + IC.itemByName[IC.items[i - 1].name].quanity;
+            counter.GetChild(1).GetComponent<TMP_Text>().text = IC.items[i - 1].name + "s: " + IC.itemByName[IC.items[i - 1].name].quantity;
         }   
     }
     
     public void SaveButton()
     {
-        //Preperation
+        //Preparation
         IC.UpdateItemsToSave();
         foreach (Storage S in containers)
         {
