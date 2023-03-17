@@ -1,0 +1,10 @@
+{
+    "name": "com.rarefushion.Inventory-Crafting",
+    "version": "1.0.0",
+    "description": "Inventory and Crafting system for Unity.",
+    "author": "Galen Strother",
+    "license": "MIT",
+    "displayName": "Inventory-Crafting",
+    "unity": "2020.3",
+    "type": "tool"
+}
