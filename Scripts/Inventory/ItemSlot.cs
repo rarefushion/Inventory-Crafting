@@ -17,7 +17,7 @@ public class ItemSlot: MonoBehaviour
     public bool isInventory = false;
     public bool isCrafting = false;
     //Instantiate a new item and quantity for this itemSlot
-    public void Fill(Item I, int quan)
+    public virtual void Fill(Item I, int quan)
     {
         image.gameObject.SetActive(true);
         quantityText.gameObject.SetActive(true);
@@ -28,7 +28,7 @@ public class ItemSlot: MonoBehaviour
         if (isInventory) inventory.LogItem(this, quan, true);
     }
     //Add a number and return the left overs
-    public int Add(int quan)
+    public virtual int Add(int quan)
     {
         int left;
         if (quan + quantity > item.maxStack)
@@ -47,7 +47,7 @@ public class ItemSlot: MonoBehaviour
         return left;
     }
     //Request a quantity and return what can be given
-    public int Split(int request)
+    public virtual int Split(int request)
     {
         int give = Mathf.Clamp(request, 0, quantity);
         if (isInventory) inventory.LogItem(this, -give, false);
@@ -57,7 +57,7 @@ public class ItemSlot: MonoBehaviour
         return give;
     }
     //Swap items and quantities of this slot and the input slot
-    public void Swap(ItemSlot toSwap)
+    public virtual void Swap(ItemSlot toSwap)
     {
         string itemName = item.name;
         int quan = quantity;
@@ -83,7 +83,7 @@ public class ItemSlot: MonoBehaviour
         }
     }
 
-    public void Clear()
+    public virtual void Clear()
     {
         if (isInventory) inventory.LogItem(this, -quantity, false);
         quantity = 0;
