@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class PrecisionSplit : MonoBehaviour
+public class PrecisionSplit : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public int Value
     {
@@ -22,6 +23,7 @@ public class PrecisionSplit : MonoBehaviour
     public Slider slider;
     public TMP_InputField textInput;
 
+    public bool mouseInside;
     public Action<int> SplitCalled;
 
     public void Split()
@@ -40,5 +42,15 @@ public class PrecisionSplit : MonoBehaviour
     {
         if (slider.value > 0)
             Value = (int)Mathf.Floor(slider.value);
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        mouseInside = true;
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        mouseInside = false;
     }
 }

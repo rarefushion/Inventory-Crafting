@@ -1,14 +1,4 @@
-Remember: To just get it implimented and go threw later and organize
-
-Crafting; 
-    Make: string in requirments and products a dropdown of InventoryController>items
-    Convert: crafting button into something that can be referenced by inventory controller so we call right click and even advanced split. May have to remake advanced split since it's not split its craft.
-
-Test: category in category
-
-Fix: when making more than five chests and decrafting chests don't go below five but can still use decraft
-
-Prepare for launch;
-    Reorginize;
-        Consider: makeing advanced split a CursorState
-    Make: Prefabs for crafting
+Consider other category options
+Make hotbar. thinking it should still reference the last few of the inventory
+Should probably import crafting window
+Add item drag functionality

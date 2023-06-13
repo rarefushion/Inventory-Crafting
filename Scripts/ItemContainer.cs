@@ -132,9 +132,9 @@ public class ItemContainer : MonoBehaviour
     /// </summary>
     public int Give(int amount)
     {
-        int give = Mathf.Clamp(amount + quan, 0, Item.maxStack - quan);
-        Quantity += give;
-        return give;
+        int toTake = Mathf.Min(amount, Item.maxStack - quan);
+        Quantity += toTake;
+        return amount - toTake;
     }
     /// <summary>
     ///   Swaps the Item and quantity with the provided ItemContainer
