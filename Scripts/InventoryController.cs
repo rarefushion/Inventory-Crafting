@@ -50,6 +50,8 @@ public class InventoryController : MonoBehaviour
                     itemSlotsByItemName[previousItem].Remove(IS);
                     if (itemSlotsByItemName[previousItem].Count == 0)
                         itemSlotsByItemName.Remove(previousItem);
+                    else
+                        itemSlotsByItemName[previousItem].Sort();
                 }
                 emptySlots.Remove(IS);
                 previousItem = null;
@@ -58,10 +60,13 @@ public class InventoryController : MonoBehaviour
                     if (!itemSlotsByItemName.ContainsKey(i.name))
                         itemSlotsByItemName.Add(i.name, new List<ItemSlot>());
                     itemSlotsByItemName[i.name].Add(IS);
+                    itemSlotsByItemName[i.name].Sort();
                     previousItem = i.name;
                 }
                 else
                     emptySlots.Add(IS);
+                emptySlots.Sort();
+
             };
             IS.Item = itemByName[itemByName.Keys.ToArray()[UnityEngine.Random.Range(0, items.Length)]];
             IS.Quantity = UnityEngine.Random.Range(0, IS.Item.maxStack / 2);

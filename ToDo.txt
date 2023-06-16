@@ -1,4 +1,3 @@
-Consider other category options
 Make hotbar. thinking it should still reference the last few of the inventory
 Should probably import crafting window
 Add item drag functionality

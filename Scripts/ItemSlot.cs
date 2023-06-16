@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class ItemSlot : ItemContainer, IPointerClickHandler
+public class ItemSlot : ItemContainer, IPointerClickHandler, IComparable<ItemSlot>
 {
     [Header("--- ItemSlot ---")]
     public PrecisionSplit precisionSplit;
@@ -78,4 +78,12 @@ public class ItemSlot : ItemContainer, IPointerClickHandler
             }
         }
     }
+
+    public int CompareTo(ItemSlot compareTo)
+    {
+        if (compareTo == null)
+            return 1;
+        return transform.GetSiblingIndex().CompareTo(compareTo.transform.GetSiblingIndex());
+    }
+
 }
