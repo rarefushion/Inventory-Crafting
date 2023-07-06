@@ -62,6 +62,24 @@ public partial class @InventoryInputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HotBar Slot Up"",
+                    ""type"": ""Value"",
+                    ""id"": ""7176ccfe-3c2b-4298-aa4b-68c3e643c723"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""HotBar Slot Down"",
+                    ""type"": ""Value"",
+                    ""id"": ""63e33899-bb3b-4651-808e-8948c4c627ee"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -108,6 +126,28 @@ public partial class @InventoryInputs: IInputActionCollection2, IDisposable
                     ""action"": ""Middle Click"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""46c3d4f7-30b1-4ef5-8bb8-9db0db2ba252"",
+                    ""path"": ""<Mouse>/scroll/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HotBar Slot Up"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""064b0893-9202-4854-8eda-b2fc90be3017"",
+                    ""path"": ""<Mouse>/scroll/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HotBar Slot Down"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -120,6 +160,8 @@ public partial class @InventoryInputs: IInputActionCollection2, IDisposable
         m_Navigation_LeftClick = m_Navigation.FindAction("Left Click", throwIfNotFound: true);
         m_Navigation_RightClick = m_Navigation.FindAction("Right Click", throwIfNotFound: true);
         m_Navigation_MiddleClick = m_Navigation.FindAction("Middle Click", throwIfNotFound: true);
+        m_Navigation_HotBarSlotUp = m_Navigation.FindAction("HotBar Slot Up", throwIfNotFound: true);
+        m_Navigation_HotBarSlotDown = m_Navigation.FindAction("HotBar Slot Down", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -185,6 +227,8 @@ public partial class @InventoryInputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Navigation_LeftClick;
     private readonly InputAction m_Navigation_RightClick;
     private readonly InputAction m_Navigation_MiddleClick;
+    private readonly InputAction m_Navigation_HotBarSlotUp;
+    private readonly InputAction m_Navigation_HotBarSlotDown;
     public struct NavigationActions
     {
         private @InventoryInputs m_Wrapper;
@@ -193,6 +237,8 @@ public partial class @InventoryInputs: IInputActionCollection2, IDisposable
         public InputAction @LeftClick => m_Wrapper.m_Navigation_LeftClick;
         public InputAction @RightClick => m_Wrapper.m_Navigation_RightClick;
         public InputAction @MiddleClick => m_Wrapper.m_Navigation_MiddleClick;
+        public InputAction @HotBarSlotUp => m_Wrapper.m_Navigation_HotBarSlotUp;
+        public InputAction @HotBarSlotDown => m_Wrapper.m_Navigation_HotBarSlotDown;
         public InputActionMap Get() { return m_Wrapper.m_Navigation; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -214,6 +260,12 @@ public partial class @InventoryInputs: IInputActionCollection2, IDisposable
             @MiddleClick.started += instance.OnMiddleClick;
             @MiddleClick.performed += instance.OnMiddleClick;
             @MiddleClick.canceled += instance.OnMiddleClick;
+            @HotBarSlotUp.started += instance.OnHotBarSlotUp;
+            @HotBarSlotUp.performed += instance.OnHotBarSlotUp;
+            @HotBarSlotUp.canceled += instance.OnHotBarSlotUp;
+            @HotBarSlotDown.started += instance.OnHotBarSlotDown;
+            @HotBarSlotDown.performed += instance.OnHotBarSlotDown;
+            @HotBarSlotDown.canceled += instance.OnHotBarSlotDown;
         }
 
         private void UnregisterCallbacks(INavigationActions instance)
@@ -230,6 +282,12 @@ public partial class @InventoryInputs: IInputActionCollection2, IDisposable
             @MiddleClick.started -= instance.OnMiddleClick;
             @MiddleClick.performed -= instance.OnMiddleClick;
             @MiddleClick.canceled -= instance.OnMiddleClick;
+            @HotBarSlotUp.started -= instance.OnHotBarSlotUp;
+            @HotBarSlotUp.performed -= instance.OnHotBarSlotUp;
+            @HotBarSlotUp.canceled -= instance.OnHotBarSlotUp;
+            @HotBarSlotDown.started -= instance.OnHotBarSlotDown;
+            @HotBarSlotDown.performed -= instance.OnHotBarSlotDown;
+            @HotBarSlotDown.canceled -= instance.OnHotBarSlotDown;
         }
 
         public void RemoveCallbacks(INavigationActions instance)
@@ -253,5 +311,7 @@ public partial class @InventoryInputs: IInputActionCollection2, IDisposable
         void OnLeftClick(InputAction.CallbackContext context);
         void OnRightClick(InputAction.CallbackContext context);
         void OnMiddleClick(InputAction.CallbackContext context);
+        void OnHotBarSlotUp(InputAction.CallbackContext context);
+        void OnHotBarSlotDown(InputAction.CallbackContext context);
     }
 }

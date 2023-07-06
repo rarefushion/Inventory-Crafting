@@ -12,6 +12,7 @@ public class ItemSlot : ItemContainer, IPointerClickHandler, IComparable<ItemSlo
 {
     [Header("--- ItemSlot ---")]
     public PrecisionSplit precisionSplit;
+    public bool visualOnly;
 
     private InventoryController IC;
     private CursorSlot CS;
@@ -41,7 +42,7 @@ public class ItemSlot : ItemContainer, IPointerClickHandler, IComparable<ItemSlo
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (precisionSplit.mouseInside && precisionSplit.gameObject.activeSelf)
+        if (visualOnly || (precisionSplit.mouseInside && precisionSplit.gameObject.activeSelf))
             return;
 
         Item CItem = CS.Item;

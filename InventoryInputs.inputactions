@@ -40,6 +40,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "HotBar Slot Up",
+                    "type": "Value",
+                    "id": "7176ccfe-3c2b-4298-aa4b-68c3e643c723",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "HotBar Slot Down",
+                    "type": "Value",
+                    "id": "63e33899-bb3b-4651-808e-8948c4c627ee",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -84,6 +102,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Middle Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "46c3d4f7-30b1-4ef5-8bb8-9db0db2ba252",
+                    "path": "<Mouse>/scroll/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotBar Slot Up",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "064b0893-9202-4854-8eda-b2fc90be3017",
+                    "path": "<Mouse>/scroll/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotBar Slot Down",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
