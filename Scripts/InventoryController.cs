@@ -1,14 +1,12 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class InventoryController : MonoBehaviour
 {
     public int numberOfSlots;
+    public bool saveLoad = true;
 
     [Header("Object References")]
     public GameObject slotsParent;
@@ -26,6 +24,7 @@ public class InventoryController : MonoBehaviour
     public Dictionary<string, Item> itemByName = new Dictionary<string, Item>();
     public Dictionary<string, List<ItemSlot>> itemSlotsByItemName = new Dictionary<string, List<ItemSlot>>();
     public List<ItemSlot> emptySlots;
+
     public static InventoryController current;
 
     private void Awake()
@@ -68,9 +67,9 @@ public class InventoryController : MonoBehaviour
                 emptySlots.Sort();
 
             };
-            IS.Item = itemByName[itemByName.Keys.ToArray()[UnityEngine.Random.Range(0, items.Length)]];
-            IS.Quantity = UnityEngine.Random.Range(0, IS.Item.maxStack / 2);
         }
+        if (saveLoad)
+            InventorySaveSystem.Load();
     }
     /// <summary>
     ///   Returns true if there are enough items
@@ -123,7 +122,7 @@ public class InventoryController : MonoBehaviour
     /// <summary>
     ///   Checks if there are enough spaces then adds the items. Returns true if the items have been Added
     /// </summary>
-    public bool TryGive(string itemName, int quantity)
+    public bool TryGive(string itemName, int quantity, bool toEnd = false)
     {
         if (CouldGive(itemName, quantity))
         {
@@ -131,13 +130,25 @@ public class InventoryController : MonoBehaviour
                 for (int i = 0; i < itemSlotsByItemName[itemName].Count; i++)
                     if (quantity > 0)
                         quantity = itemSlotsByItemName[itemName][i].Give(quantity);
-            for (int i = 0; i < emptySlots.Count; i++)
-                if (quantity > 0)
-                {
-                    int q = Mathf.Min(quantity, itemByName[itemName].maxStack);
-                    quantity -= q;
-                    emptySlots[i].Fill(itemName, q);
-                }
+            if (!toEnd)
+            {
+
+                for (int i = 0; i < emptySlots.Count; i++)
+                    if (quantity > 0)
+                    {
+                        int q = Mathf.Min(quantity, itemByName[itemName].maxStack);
+                        quantity -= q;
+                        emptySlots[i].Fill(itemName, q);
+                    }
+            }
+            else
+                for (int i = emptySlots.Count - 1; i >= 0; i--)
+                    if (quantity > 0)
+                    {
+                        int q = Mathf.Min(quantity, itemByName[itemName].maxStack);
+                        quantity -= q;
+                        emptySlots[i].Fill(itemName, q);
+                    }
             return true;
         }
         return false;
@@ -155,5 +166,11 @@ public class InventoryController : MonoBehaviour
         inputs.Disable();
         if (onEnable != null)
             onEnable.Invoke();
+    }
+
+    private void OnDestroy()
+    {
+        if (saveLoad)
+            InventorySaveSystem.Save();
     }
 }

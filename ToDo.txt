@@ -1,3 +1,2 @@
-Make hotbar. thinking it should still reference the last few of the inventory
 Should probably import crafting window
-Add item drag functionality
+Figure out how to deal with the item that might be in the cursor slot on close

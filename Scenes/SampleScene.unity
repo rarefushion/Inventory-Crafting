@@ -1364,6 +1364,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numberOfSlots: 16
+  saveLoad: 1
   slotsParent: {fileID: 2057842003}
   slotPrefab: {fileID: 5511716274020500753, guid: b5ecc7a958d32fc4b98cf530c7abec09, type: 3}
   defaultDescriptionOBJ: {fileID: 1213192233}
@@ -2494,7 +2495,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.00036621094, y: 498.38}
+  m_AnchoredPosition: {x: -0.00048828125, y: 498.38}
   m_SizeDelta: {x: 0.0012207, y: -1240}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2098101425

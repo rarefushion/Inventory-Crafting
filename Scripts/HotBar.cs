@@ -26,7 +26,13 @@ public class HotBar : MonoBehaviour
 
     public Transform referencesParent;
     public Transform defaultSelectorImage;
+    public static HotBar current;
     private InventoryController IC;
+
+    private void Awake()
+    {
+        current = this;
+    }
 
     private void Start()
     {

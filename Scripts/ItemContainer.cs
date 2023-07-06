@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -94,7 +92,7 @@ public class ItemContainer : MonoBehaviour
 
     public Action<Item, int> Updated;
 
-    public void Disable()
+    public virtual void Disable()
     {
         quan = 0;
         item = null;
@@ -105,7 +103,7 @@ public class ItemContainer : MonoBehaviour
     /// <summary>
     ///   Tries to fill or add if names match else return false
     /// </summary>
-    public bool Fill(string itemName, int quantity)
+    public virtual bool Fill(string itemName, int quantity)
     {
         if (quan <= 0)
         {
@@ -121,7 +119,7 @@ public class ItemContainer : MonoBehaviour
     /// <summary>
     ///   Returns what was taken
     /// </summary>
-    public int Take(int amount)
+    public virtual int Take(int amount)
     {
         int take = Mathf.Clamp(amount, 0, quan);
         Quantity -= take;
@@ -130,7 +128,7 @@ public class ItemContainer : MonoBehaviour
     /// <summary>
     ///   Fills with what it can take and returns the rest
     /// </summary>
-    public int Give(int amount)
+    public virtual int Give(int amount)
     {
         int toTake = Mathf.Min(amount, Item.maxStack - quan);
         Quantity += toTake;
@@ -139,7 +137,7 @@ public class ItemContainer : MonoBehaviour
     /// <summary>
     ///   Swaps the Item and quantity with the provided ItemContainer
     /// </summary>
-    public void Swap(ItemContainer itemC)
+    public virtual void Swap(ItemContainer itemC)
     {
         int q = quan;
         Item i = item;
